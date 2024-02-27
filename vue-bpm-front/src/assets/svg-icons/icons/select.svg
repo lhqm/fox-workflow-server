@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 3</title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="18" height="18"></rect>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="表单编辑" transform="translate(-150.000000, -94.000000)">
+            <g id="编组-3" transform="translate(150.000000, 94.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="蒙版"></g>
+                <g id="2下拉框" mask="url(#mask-2)" fill="currentColor" fill-rule="nonzero">
+                    <g transform="translate(3.000000, 3.000000)">
+                        <path d="M11,0.999999996 L11,11 L0.999999996,11 L0.999999996,0.999999996 L11,0.999999996 M12,0 L0,0 L0,12 L12,12 L12,0 Z" id="形状"></path>
+                        <path d="M8.345,4.595 L6.4325,7.905 C6.24,8.2375 5.76,8.2375 5.5675,7.905 L3.655,4.595 C3.46249999,4.26250001 3.70249999,3.845 4.0875,3.845 L7.91,3.845 C8.295,3.845 8.53750001,4.26250001 8.345,4.595 L8.345,4.595 Z" id="路径"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

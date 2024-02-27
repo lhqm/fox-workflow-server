@@ -1,0 +1,152 @@
+<template>
+  <div class="login-box">
+    <div class="title">OA自动化流程中台</div>
+    <div class="login-form">
+      <el-input placeholder="请输入用户名" v-model="formLogin.username">
+        <icon-svg slot="prefix" name="user" />
+      </el-input>
+      <el-input placeholder="请输入密码" type="password" v-model="formLogin.password">
+        <icon-svg slot="prefix" name="password" />
+      </el-input>
+      <el-checkbox v-model="formLogin.checked">下次自动登录</el-checkbox>
+      <div class="btn">
+        <el-button type="primary" @click="submit" @keyup.enter="keyDown">登录</el-button>
+      </div>
+    </div>
+    <div class="footer">
+      <img src="/image/login/liucheng.png" class="login-icon" />
+      <p>基于activiti 7的企业工作流管理中台</p>
+    </div>
+  </div>
+</template>
+<script>
+  import { mapActions } from 'vuex';
+
+  export default {
+    name: 'login-box',
+    data() {
+      return {
+        formLogin: {
+          username: '',
+          password: '',
+          checked: true
+        }
+      };
+    },
+    methods: {
+      ...mapActions('store/account', ['login']),
+      submit() {
+        if (!this.formLogin.username || !this.formLogin.password) {
+          this.$message.error('用户名或密码不能为空');
+          return;
+        }
+        this.login({
+          username: this.formLogin.username,
+          password: this.formLogin.password
+        }).then((res) => {
+          if(res!=false){
+            this.$message.success('登录成功');
+            // 重定向对象不存在则返回顶层路径
+            this.$router.replace(this.$route.query.redirect || '/');
+          }
+
+        });
+      },
+      keyDown(e) {
+        // 回车则执行登录方法 enter键的ASCII是13
+        if (e.keyCode === 13 || e.keyCode === 100) {
+          this.submit(); // 定义的登录方法
+        }
+      }
+    },
+    mounted() {
+      // 绑定监听事件
+      window.addEventListener('keydown', this.keyDown);
+    },
+    destroyed() {
+      // 销毁事件
+      window.removeEventListener('keydown', this.keyDown, false);
+    }
+  };
+</script>
+<style lang="scss">
+  .login-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 312px;
+    height: 420px;
+    background-color: #fff;
+    padding: 14px 16px 7px 16px;
+    .title {
+      width: 100%;
+      font-size: 23px;
+      font-family: SourceHanSansCN-Medium, SourceHanSansCN;
+      font-weight: 500;
+      color: #3b3b3b;
+      text-align: center;
+      line-height: 42px;
+      border-bottom: 1px solid #b3c0d1;
+    }
+    .login-form {
+      padding: 26px 10px 0 10px;
+      .el-input {
+        margin-bottom: 7px;
+      }
+      .el-input__inner {
+        border: none;
+        background-color: #f4f4f4 !important;
+        padding-left: 42px;
+        color: #606266 !important;
+        height: 36px;
+      }
+      .el-input__prefix {
+        padding-left: 10px;
+        svg {
+          width: 22px;
+          height: 22px;
+          margin-top: 9px;
+        }
+      }
+      .el-checkbox {
+        margin-top: 7px;
+        .el-checkbox__label {
+          width: 65px;
+          font-size: 11px;
+          font-family: SourceHanSansCN-Regular, SourceHanSansCN;
+          font-weight: 400;
+          color: #bcbcbc;
+          line-height: 16px;
+        }
+        .el-checkbox__input.is-checked .el-checkbox__inner {
+          background-color: #3370ff;
+          border-color: #3370ff;
+        }
+      }
+      .btn {
+        margin-top: 65px;
+        .el-button {
+          width: 100%;
+          height: 36px;
+          background-color: #3370ff;
+          border-color: #3370ff;
+        }
+      }
+    }
+    .footer {
+      margin-top: 45px;
+      text-align: center;
+      .login-icon {
+        width: 55px;
+      }
+      p {
+        font-size: 11px;
+        font-family: HarmonyOS_Sans;
+        color: #a4a4a4;
+        line-height: 30px;
+        margin: 0;
+      }
+    }
+  }
+</style>

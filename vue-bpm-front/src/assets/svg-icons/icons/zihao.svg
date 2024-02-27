@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="17px" height="15px" viewBox="0 0 17 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>zihao</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="首页" transform="translate(-1230.000000, -30.000000)" fill="currentColor">
+            <g id="zihao" transform="translate(1230.000000, 30.000000)">
+                <polygon id="Fill-1" points="0 8.75001678 2.4338198 8.75001678 2.4338198 15 3.65070296 15 3.65070296 8.75001678 6.08445145 8.75001678 6.08445145 7.50004578 0 7.50004578"></polygon>
+                <polygon id="Fill-2" points="2.40945219 0 2.40945219 2.50003357 8.51827125 2.50003357 8.51827125 15 10.9520197 15 10.9520197 2.50003357 17 2.50003357 17 0"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

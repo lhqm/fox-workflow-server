@@ -1,0 +1,184 @@
+// 主题名称
+$theme-name: 'darkNav';
+// 主题文字颜色
+$theme-text-color: #1f2228;
+// 主题背景颜色
+$theme-bg-color: #f1f6fd;
+// 主题背景图片遮罩
+$theme-bg-mask: rgba(#000, 0);
+
+// button
+$theme-el-btn-text-color: #1890ff;
+$theme-el-button-color: #606266;
+$theme-el-button-border-color: #dcdfe6;
+$theme-el-button-bgc: #fff;
+$theme-el-button-active-color: #409eff;
+$theme-el-button-active-border-color: #c6e2ff;
+$theme-el-button-active-bgc: #ecf5ff;
+$theme-el-primary-button-color: #fff;
+$theme-el-primary-button-border-color: #3370ff;
+$theme-el-primary-button-active-color: #fff;
+$theme-el-primary-button-active-bgc: rgba(51, 112, 255, 0.8);
+
+// form
+$theme-el-form-label-color: #000;
+$theme-el-input-bgc: #fff;
+$theme-el-input-border-color: #dcdfe6;
+$theme-el-select-hover-bgc: #f5f7fa;
+$theme-el-select-item-color: #3370ff;
+$theme-el-select-tag-bgc: #f4f4f5;
+$theme-el-select-tag-border-color: #e9e9eb;
+$theme-el-select-tag-color: #909399;
+$theme-el-input-number-btn-color: #606266;
+$theme-el-input-number-btn-bgc: #f5f7fa;
+$theme-el-input-number-btn-border-color: #dcdfe6;
+$theme-el-input-number-btn-disabled-color: #c0c4cc;
+$theme-el-input-number-btn-disabled-bgc: #f5f7fa;
+$theme-el-input-number-btn-border-disabled-color: #e4e7ed;
+
+// tree
+$theme-el-tree-bgc: #fff;
+$theme-el-tree-color: #000;
+$theme-el-tree-active-bgc: #f0f7ff;
+
+// dialog
+$theme-el-dialog-bgc: #fff;
+$theme-el-dialog-title-color: rgba(0, 0, 0, 0.85);
+$theme-el-dialog-border-color: rgba(0, 0, 0, 0.09);
+$theme-el-input-placeholder-color: rgba(0, 0, 0, 0.25);
+
+// 消息提示
+$theme-message-info-background-color: $color-bg;
+$theme-message-info-text-color: $color-text-normal;
+$theme-message-info-border-color: $color-border-1;
+
+// container组件
+$theme-container-background-color: rgba(#fff, 1);
+$theme-container-header-footer-background-color: #fff;
+$theme-container-border-inner: 1px solid #cfd7e5;
+$theme-container-border-outer: none;
+
+$theme-multiple-page-control-color: #7f7f7f;
+$theme-multiple-page-control-color-active: #0d72ff;
+$theme-multiple-page-control-nav-prev-color: #cfd7e5;
+$theme-multiple-page-control-nav-next-color: #cfd7e5;
+$theme-multiple-page-control-border-color: #ececec;
+$theme-multiple-page-control-border-color-active: #fff;
+$theme-multiple-page-control-background-color: rgba(#000, 0.03);
+$theme-multiple-page-control-background-color-active: #fff;
+
+// 顶栏和侧边栏中展开的菜单 hover 状态下
+$theme-menu-item-color-hover: #293849;
+$theme-menu-item-background-color-hover: #ecf5ff;
+
+// 顶栏上的文字颜色
+$theme-header-item-color: #1f2228;
+$theme-header-item-background-color: transparent;
+// 顶栏上的项目在 hover 时
+$theme-header-item-color-hover: #3370ff;
+$theme-header-item-background-color-hover: rgba(#fff, 0.5);
+// 顶栏上的项目在 focus 时
+$theme-header-item-color-focus: #3370ff;
+$theme-header-item-background-color-focus: rgba(#fff, 0.5);
+// 顶栏上的项目在 active 时
+$theme-header-item-color-active: #3370ff;
+$theme-header-item-background-color-active: rgba(#fff, 0.5);
+// 顶栏菜单
+$theme-header-menu-item-background-color: #212332;
+$theme-header-menu-item-color: #cccccc;
+
+// 菜单在顶部时的顶栏上的文字颜色
+$theme-header-top-item-color: #88a7d8;
+$theme-header-top-item-background-color: transparent;
+// 菜单在顶部时的顶栏上的项目在 hover 时
+$theme-header-top-item-color-hover: #ffffff;
+$theme-header-top-item-background-color-hover: transparent;
+// 菜单在顶部时的顶栏上的项目在 focus 时
+$theme-header-top-item-color-focus: #ffffff;
+$theme-header-top-item-background-color-focus: transparent;
+// 菜单在顶部时的顶栏上的项目在 active 时
+$theme-header-top-item-color-active: #ffffff;
+$theme-header-top-item-background-color-active: transparent;
+
+// 顶栏菜单下popup里的菜单
+$theme-horizontal-menu-background-color: #020021;
+$theme-horizontal-menu-item-color: #75849a;
+$theme-horizontal-menu-hover-background-color: rgba(141, 175, 255, 0.27);
+$theme-horizontal-menu-hover-item-color: #ffffff;
+
+// 侧边栏上的文字颜色
+$theme-aside-item-color: #75849a;
+$theme-header-leaf-item-color: #888a8e;
+$theme-aside-item-background-color: transparent;
+// 侧边栏上的项目在 hover 时
+$theme-aside-item-color-hover: #ffffff;
+$theme-aside-item-background-color-hover: rgba(141, 175, 255, 0.27);
+// 侧边栏上的项目在 focus 时
+$theme-aside-item-color-focus: #ffffff;
+$theme-aside-item-background-color-focus: rgba(141, 175, 255, 0.27);
+// 侧边栏上的项目在 active 时
+$theme-aside-item-color-active: #ffffff;
+$theme-aside-item-background-color-active: rgba(141, 175, 255, 0.27);
+
+// 侧边栏菜单为空的时候显示的元素
+$theme-aside-menu-empty-icon-color: $color-text-normal;
+$theme-aside-menu-empty-text-color: $color-text-normal;
+$theme-aside-menu-empty-background-color: rgba(#000, 0.03);
+$theme-aside-menu-empty-icon-color-hover: $color-text-main;
+$theme-aside-menu-empty-text-color-hover: $color-text-main;
+$theme-aside-menu-empty-background-color-hover: rgba(#000, 0.05);
+
+// 顶部
+$theme-header-user-icon-color: #3370ff;
+$theme-header-background-color: #f1f6fd;
+$theme-header-top-background-color: #020021;
+$theme-logo-bgc: #020021;
+$theme-log-title-color: #fff;
+$theme-aside-menu-background-color: #020021;
+$multiple-page-control-content-bgc: #fff;
+$theme-header-menu-item-background-color: #fff;
+
+// table
+$element-table-color: #606266;
+$element-table-header-bgc: #fafafa;
+$element-table-header-color: rgba(0, 0, 0, 0.6);
+$element-table-row-0-bgc: #fff;
+$element-table-row-1-bgc: #fafafa;
+$element-table-row-0-column-color: #000;
+$element-table-header-border-color: #ebeef5;
+$element-table-border-color: #ebeef5;
+$el-table-striped-bgc: #fafafa;
+$element-table-loading-bgc: rgba(255, 255, 255, 0.9);
+$el-table-expand-icon-bgc: rgba(90, 139, 255, 0.22);
+
+// 页面中tab标签页
+$theme-el-tab-container-item-color: rgba(0, 0, 0, 0.65);
+$theme-el-tab-container-item-active-color: #3370ff;
+$theme-el-tab-bottom-line-bgc: #e4e7ed;
+
+//面包屑
+$theme-el-breadcrumb-color: rgba(0, 0, 0, 0.45);
+$theme-el-breadcrumb-no-redirect-color: rgba(0, 0, 0, 0.65);
+
+// 表单设计器
+$theme-form-design-action-bar-bgc: #fff;
+$theme-form-design-center-bgc: #f4f6fa;
+$theme-form-design-comp-bgc: #f4f6fc;
+$theme-form-design-active-form-item-bgc: #f6f6f6;
+$theme-form-design-form-item-bgc: #f2f6fc;
+$theme-drawing-board-border-color: #ccc;
+
+// pagination
+$theme-el-pagination-bgc: #fff;
+$theme-el-pagination-color: rgba(0, 0, 0, 0.65);
+$theme-el-pagination-active-bgc: #3370ff;
+$theme-el-pagination-active-color: #fff;
+
+//滚动条
+$theme-scrollbar-bgc: #f1f1f1;
+$theme-scrollbar-color: #cfcfcf;
+$theme-scrollbar-hover-color: #bbb;
+
+// 流程设计器
+$theme-flow-design-process-panel-box-shadow: #cccccc;
+$theme-flow-design-process-designer-container-bgc: #fff;

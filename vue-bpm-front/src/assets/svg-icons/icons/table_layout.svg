@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>表格布局</title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="18" height="18"></rect>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="表单编辑" transform="translate(-153.000000, -445.000000)">
+            <g id="表格布局" transform="translate(153.000000, 445.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="蒙版"></g>
+                <g id="表格" mask="url(#mask-2)" fill="currentColor" fill-rule="nonzero">
+                    <g transform="translate(4.000000, 4.000000)" id="形状">
+                        <path d="M1.1,7.7 L3.34455,7.7 L3.34455,9.9 L1.1,9.9 L1.1,7.7 Z M4.44565,7.7 L6.64565,7.7 L6.64565,9.9 L4.44565,9.9 L4.44565,7.7 Z M7.74565,7.7 L9.9,7.7 L9.9,9.9 L7.7451,9.9 L7.74565,7.7 Z M1.1,4.4 L3.34455,4.4 L3.34455,6.6 L1.1,6.6 L1.1,4.4 Z M4.4451,4.4 L6.6451,4.4 L6.6451,6.6 L4.4451,6.6 L4.4451,4.4 Z M7.7451,4.4 L9.9,4.4 L9.9,6.6 L7.7451,6.6 L7.7451,4.4 Z M1.1,1.1 L3.34455,1.1 L3.34455,3.3 L1.1,3.3 L1.1,1.1 Z M4.4451,1.1 L6.6451,1.1 L6.6451,3.3 L4.4451,3.3 L4.4451,1.1 Z M7.7451,1.1 L9.9,1.1 L9.9,3.3 L7.7451,3.3 L7.7451,1.1 Z M7.7451,0 L0,0 L0,11 L11,11 L11,0 L7.7451,0 Z"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
