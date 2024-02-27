@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.activiti.z_six.excLog.dao.ExcLogMapper">
+    <select id="findExcLogPage" resultType="com.activiti.z_six.excLog.dto.OutQueryExcLogDto">
+        select *
+        from exc_log
+        where delFlag = '0'
+        <if test= "dto.excId != null and dto.excId!=''" >
+            AND excId = #{dto.excId}
+        </if>
+        <if test= "dto.excReqParam != null and dto.excReqParam!=''" >
+            AND excReqParam = #{dto.excReqParam}
+        </if>
+        <if test= "dto.excName != null and dto.excName!=''" >
+            AND excName = #{dto.excName}
+        </if>
+        <if test= "dto.excMessage != null and dto.excMessage!=''" >
+            AND excMessage = #{dto.excMessage}
+        </if>
+        <if test= "dto.operUserId != null and dto.operUserId!=''" >
+            AND operUserId = #{dto.operUserId}
+        </if>
+        <if test= "dto.operUserName != null and dto.operUserName!=''" >
+            AND operUserName = #{dto.operUserName}
+        </if>
+        <if test= "dto.operMethod != null and dto.operMethod!=''" >
+            AND operMethod = #{dto.operMethod}
+        </if>
+        <if test= "dto.operReqMethod != null and dto.operReqMethod!=''" >
+            AND operReqMethod = #{dto.operReqMethod}
+        </if>
+        <if test= "dto.operUri != null and dto.operUri!=''" >
+            AND operUri = #{dto.operUri}
+        </if>
+        <if test= "dto.operIp != null and dto.operIp!=''" >
+            AND operIp = #{dto.operIp}
+        </if>
+        <if test= "dto.updateBy != null and dto.updateBy!=''" >
+            AND updateBy = #{dto.updateBy}
+        </if>
+        LIMIT #{startIndex},#{pageSize}
+    </select>
+    <insert id="InAddExcLog" parameterType="com.activiti.z_six.excLog.entity.ExcLogEntity">
+        insert into exc_log(excId,excReqParam,excName,excMessage,operUserId,operUserName,operMethod,operReqMethod,operUri,
+                            operIp,delFlag,createTime,updateTime,updateBy,version)
+        values (#{dto.excId},#{dto.excReqParam},#{dto.excName},#{dto.excMessage},#{dto.operUserId},#{dto.operUserName},
+                #{dto.operMethod},#{dto.operReqMethod},#{dto.operUri},#{dto.operIp},#{dto.delFlag},#{dto.createTime},
+                #{dto.updateTime},#{dto.updateBy},#{dto.version})
+    </insert>
+    <update id="InUpdExcLog" parameterType="com.activiti.z_six.excLog.entity.ExcLogEntity">
+        update exc_log set excReqParam=#{dto.excReqParam},excName=#{dto.excName},excMessage=#{dto.excMessage},operUserId=#{dto.operUserId},
+                           operUserName=#{dto.operUserName},operMethod=#{dto.operMethod},operReqMethod=#{dto.operReqMethod},
+                           operUri=#{dto.operUri},operIp=#{dto.operIp},delFlag=#{dto.delFlag},createTime=#{dto.createTime},
+                           updateTime=#{dto.updateTime},
+                            updateBy=#{dto.updateBy},version=#{dto.version} where excId=#{dto.excId}
+    </update>
+    <update id="InDealExcLog" parameterType="com.activiti.z_six.excLog.entity.ExcLogEntity">
+        update exc_log set excReqParam=#{dto.excReqParam},excName=#{dto.excName},excMessage=#{dto.excMessage},operUserId=#{dto.operUserId},
+                           operUserName=#{dto.operUserName},operMethod=#{dto.operMethod},operReqMethod=#{dto.operReqMethod},
+                           operUri=#{dto.operUri},operIp=#{dto.operIp},delFlag=#{dto.delFlag},createTime=#{dto.createTime},
+                           updateTime=#{dto.updateTime},
+                           updateBy=#{dto.updateBy},version=#{dto.version} where excId=#{dto.excId}
+    </update>
+</mapper>

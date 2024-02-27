@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.TaskInstEntityMapper">
+    <insert id="addTaskInstTrack" parameterType="com.activiti.z_six.entity.taskAssignee.TaskInstEntity" keyProperty="id_">
+        insert into act_hi_taskinst(id_,proc_def_id_,task_def_key_,proc_inst_id_,execution_id_,name_,parent_task_id_,description_,owner_,
+                                    assignee_,start_time_,claim_time_,end_time_,duration_,delete_reason_,priority_,due_date_,form_key_,
+                                    category_,tenant_id_) values(#{id_},#{proc_def_id_},#{task_def_key_},#{proc_inst_id_},#{execution_id_},
+                                                                 #{name_},#{parent_task_id_},#{description_},#{owner_},#{assignee_},
+                                                                 #{start_time_},#{claim_time_},#{end_time_},#{duration_},#{delete_reason_},
+                                                                 #{priority_},#{due_date_},#{form_key_},#{category_},#{tenant_id_});
+        insert into act_hi_actinst(id_,proc_def_id_,proc_inst_id_,execution_id_,act_id_,task_id_,act_name_,act_type_,
+                                    assignee_,start_time_,end_time_,duration_,delete_reason_,tenant_id_) values(#{id_},#{proc_def_id_},#{proc_inst_id_},#{execution_id_},
+                                                                 #{act_id_},#{task_id_},#{act_name_},#{act_type_},
+                                                                 #{assignee_},#{start_time_},#{end_time_},#{duration_},#{delete_reason_},
+                                                                #{tenant_id_});
+    </insert>
+    <delete id="deleteInstTrack" parameterType="com.activiti.z_six.entity.taskAssignee.TaskInstEntity">
+        delete FROM act_hi_taskinst where id_=#{id_}
+    </delete>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.OvProcessInstanceMapper">
+    <select id="getOvProcessIns" resultType="com.activiti.z_six.entity.taskAssignee.OvProcessInstance">
+        select * from act_re_procdef where id_=#{id}
+    </select>
+    <select id="getProcessInsLastVersion" resultType="com.activiti.z_six.entity.taskAssignee.OvProcessInstance">
+        select * from act_re_procdef where key_=#{key} order by version_ desc LIMIT 0,1
+    </select>
+
+    <select id="getProcessInsByDeployId" resultType="com.activiti.z_six.entity.taskAssignee.OvProcessInstance">
+        select * from act_re_procdef where deployment_id_=#{deploymentid} order by version_ desc LIMIT 0,1
+    </select>
+</mapper>

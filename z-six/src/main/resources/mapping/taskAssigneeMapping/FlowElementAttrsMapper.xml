@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.FlowElementAttrsMapper">
+  <select id="getFlowElementAttrs" resultType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs"
+          parameterType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs">
+    select a.*,b.form_json as mapJson from ac_sl_flowelementattrs a left join ac_sl_formmap b on a.formMap=b.id
+                                      where a.task_def_key=#{task_def_id}
+  </select>
+  <select id="getFlowElementFormAttrs" resultType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs"
+          parameterType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs">
+    select a.*,b.form_json as mapJson from ac_sl_flowelementattrs a left join ac_sl_formmap b on a.formMap=b.id where a.process_key=#{process_key}
+  </select>
+  <insert id="setFlowElementAttrs" parameterType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs" keyProperty="id">
+    insert into ac_sl_flowelementattrs(id,process_key,titleModel,task_def_key,returnWay,runWay,jumpWay,ccWay,autoCCWay,transfer,countersign,endTask,refuse)
+    values(#{id},#{process_key},#{titleModel},#{task_def_key},#{returnWay},#{runWay},#{jumpWay},#{ccWay},#{autoCCWay},#{transfer},#{countersign},#{endTask},#{refuse})
+  </insert>
+  <update id="updateFlowElementAttrs" parameterType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs">
+    update ac_sl_flowelementattrs set process_key=#{process_key},returnWay=#{returnWay},runWay=#{runWay},jumpWay=#{jumpWay},ccWay=#{ccWay},autoCCWay=#{autoCCWay},
+                                      transfer=#{transfer},countersign=#{countersign},endTask=#{endTask},refuse=#{refuse}
+    where task_def_key=#{task_def_key}
+  </update>
+  <update id="updateFlowMap" parameterType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs">
+    update ac_sl_flowelementattrs set form_type=#{form_type},titleModel=#{titleModel},formMap=#{formMap},form_url=#{form_url} where process_key=#{process_key}
+  </update>
+  <update id="updateTitleModel" parameterType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs">
+    update ac_sl_flowelementattrs set titleModel=#{titleModel} where process_key=#{process_key}
+  </update>
+  <update id="updateTaskAttrs" parameterType="com.activiti.z_six.entity.taskAssignee.FlowElementAttrs">
+    update ac_sl_flowelementattrs set returnWay=#{returnWay},runWay=#{runWay},jumpWay=#{jumpWay},ccWay=#{ccWay},autoCCWay=#{autoCCWay},
+                                      transfer=#{transfer},countersign=#{countersign},endTask=#{endTask},refuse=#{refuse},
+                                      form_type=#{form_type},titleModel=#{titleModel},formMap=#{formMap},form_url=#{form_url}
+    where task_def_key=#{task_def_key}
+  </update>
+  <select id="enumList" parameterType="com.activiti.z_six.entity.process.FlowEnum"
+          resultType="com.activiti.z_six.entity.process.FlowEnum">
+    select * from ac_sysenum
+  </select>
+</mapper>

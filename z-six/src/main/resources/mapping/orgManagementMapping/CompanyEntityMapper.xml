@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.orgmanagementMapper.CompanyEntityMapper">
+
+    <select id="getCompanyList" parameterType="com.activiti.z_six.entity.orgmanagement.CompanyEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.CompanyEntity">
+        select * from sys_company
+    </select>
+
+    <insert id="addCompany" parameterType="com.activiti.z_six.entity.orgmanagement.CompanyEntity"
+            keyProperty="id">
+        insert into sys_company(id,name,parentid) values(null,#{name},#{parentid})
+    </insert>
+
+    <update id="updateCompany" parameterType="com.activiti.z_six.entity.orgmanagement.CompanyEntity">
+        update sys_company set name=#{name},parentid=#{parentid} where id=#{id}
+    </update>
+
+    <delete id="deleteCompany" parameterType="com.activiti.z_six.entity.orgmanagement.CompanyEntity">
+        delete from sys_company where id=#{id}
+    </delete>
+
+</mapper>

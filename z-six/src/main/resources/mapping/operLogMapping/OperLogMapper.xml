@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.activiti.z_six.operLog.dao.OperLogMapper">
+    <select id="findOperLogPage" resultType="com.activiti.z_six.operLog.dto.OutQueryOperLogDto"
+    parameterType="com.activiti.z_six.dto.controllerParams.OperLogParams">
+        select *
+        from oper_log
+        where delFlag = '0'
+
+        <if test= "dto.operModule != null and dto.operModule!=''" >
+            AND operModule like concat('%',#{dto.operModule},'%')
+        </if>
+        <if test= "dto.operType != null and dto.operType!=''" >
+            AND operType = #{dto.operType}
+        </if>
+        <if test= "dto.operDesc != null and dto.operDesc!=''" >
+            AND operDesc like concat('%',#{dto.operDesc},'%')
+        </if>
+        <if test= "dto.startTime != null and dto.startTime!=''" >
+            AND DATE_FORMAT(createTime, '%Y-%m-%d') between #{dto.startTime} and #{dto.endTime}
+        </if>
+        Order By createTime DESC
+        LIMIT #{startIndex},#{pageSize}
+    </select>
+    <select id="findOperLog" resultType="java.lang.Integer"
+            parameterType="com.activiti.z_six.dto.controllerParams.OperLogParams">
+        select count(operId)
+        from oper_log
+        where delFlag = '0'
+
+        <if test= "dto.operModule != null and dto.operModule!=''" >
+            AND operModule like concat('%',#{dto.operModule},'%')
+        </if>
+        <if test= "dto.operType != null and dto.operType!=''" >
+            AND operType = #{dto.operType}
+        </if>
+        <if test= "dto.operDesc != null and dto.operDesc!=''" >
+            AND operDesc like concat('%',#{dto.operDesc},'%')
+        </if>
+        <if test= "dto.startTime != null and dto.startTime!=''" >
+            AND DATE_FORMAT(createTime, '%Y-%m-%d') between #{dto.startTime} and #{dto.endTime}
+        </if>
+    </select>
+    <insert id="InAddOperLog" parameterType="com.activiti.z_six.operLog.entity.OperLogEntity">
+        insert into oper_log(operId,operModule,operType,operDesc,operReqParam,operResParam,operUserId,operUserName,operMethod,
+                             operReqMethod,operUri,operIp,delFlag,createTime,updateTime,updateBy,version)
+        values (#{dto.operId},#{dto.operModule},#{dto.operType},#{dto.operDesc},#{dto.operReqParam},#{dto.operResParam},
+                #{dto.operUserId},#{dto.operUserName},#{dto.operMethod},#{dto.operReqMethod},#{dto.operUri},#{dto.operIp},
+                #{dto.delFlag},#{dto.createTime},#{dto.updateTime},#{dto.updateBy},#{dto.version})
+    </insert>
+    <update id="InUpdOperLog" parameterType="com.activiti.z_six.operLog.entity.OperLogEntity">
+        update oper_log set operModule=#{dto.operModule},operType=#{dto.operType},operDesc=#{dto.operDesc},operReqParam=#{dto.operReqParam},
+                            operResParam=#{dto.operResParam},operUserId=#{dto.operUserId},operUserName=#{dto.operUserName},
+                            operMethod=#{dto.operMethod},operReqMethod=#{dto.operReqMethod},operUri=#{dto.operUri},
+                            operIp=#{dto.operIp},delFlag=#{dto.delFlag},createTime=#{dto.createTime},updateTime=#{dto.updateTime},
+                            updateBy=#{dto.updateBy},version=#{dto.version} where operId=#{dto.operId}
+    </update>
+    <update id="InDealOperLog" parameterType="com.activiti.z_six.operLog.entity.OperLogEntity">
+        update oper_log set delFlag=#{dto.delFlag},updateTime=#{dto.updateTime} where operId=#{dto.operId}
+    </update>
+</mapper>

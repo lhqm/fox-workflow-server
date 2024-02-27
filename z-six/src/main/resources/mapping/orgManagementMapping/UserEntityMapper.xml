@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.orgmanagementMapper.UserEntityMapper">
+    <resultMap id="userMap" type="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        <id column="id" property="id" jdbcType="INTEGER"></id>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="username" property="username" jdbcType="VARCHAR"></result>
+        <result column="sex" property="sex" jdbcType="INTEGER"></result>
+        <result column="tel" property="tel" jdbcType="VARCHAR"></result>
+        <result column="email" property="email" jdbcType="VARCHAR"></result>
+        <result column="departid" property="departid" jdbcType="INTEGER"></result>
+        <result column="departname" property="departname" jdbcType="VARCHAR"></result>
+        <result column="guuid" property="guuid" jdbcType="VARCHAR"></result>
+        <result column="state" property="state" jdbcType="INTEGER"></result>
+        <result column="roles" property="roles" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <select id="getUserEntityList" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username,b.departid,b.id as guuid,c.name as departname,a.tel,a.email,a.sex,a.state
+         from sys_user a left join sys_deptuser b on a.username=b.username left join sys_department c
+            on b.departid=c.id where 1=1
+        <if test="name!=null and name!=''">
+            and a.name like concat('%',#{name},'%')
+        </if>
+        <if test="username!=null and username!=''">
+            and a.username like concat('%',#{username},'%')
+        </if>
+        <if test="departid!='all'">
+            and b.departid =#{departid}
+        </if>
+    </select>
+
+    <select id="getDeptUsers" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        select id as username,name,parentid as departid,0 as state  from sys_department  union
+        select a.username ,b.name,a.departid,1 as state from sys_deptuser a
+            left join sys_user b on a.username=b.username
+    </select>
+
+    <select id="getUserList" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username,b.departid,b.id as guuid,c.name as departname,a.tel,a.email,a.sex,a.state
+        from sys_user a left join sys_deptuser b on a.username=b.username left join sys_department c on b.departid=c.id
+         where 1=1
+        <if test="name!=null and name!=''">
+            and a.name like concat('%',#{name},'%')
+        </if>
+        <if test="username!=null and username!=''">
+            and a.username like concat('%',#{username},'%')
+        </if>
+        <if test="departid!='all'">
+            and b.departid =#{departid}
+        </if>
+
+        LIMIT #{page},#{pageSize}
+    </select>
+
+    <select id="getUserEntityInfo" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username,b.departid,b.id as guuid,c.name as departname,a.tel,a.email,a.sex,a.state
+        from sys_user a left join sys_deptuser b on a.username=b.username left join sys_department c
+                                                                                on b.departid=c.id
+        where a.username=#{username}
+    </select>
+
+    <select id="getUserManager" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username,b.departid,b.id as guuid,c.name as departname,a.tel,a.email,a.sex,a.state
+        from sys_user a left join sys_deptuser b on a.username=b.username left join sys_department c
+                                                                                on b.departid=c.id
+        where a.username in(select manager from sys_department where id in(select departid from sys_deptuser where username=#{username}))
+    </select>
+
+    <select id="getUserLeader" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username,b.departid,b.id as guuid,c.name as departname,a.tel,a.email,a.sex,a.state
+        from sys_user a left join sys_deptuser b on a.username=b.username left join sys_department c
+                                                                                on b.departid=c.id
+        where a.username in(select leader from sys_department where id in(select departid from sys_deptuser where username=#{username}))
+    </select>
+
+    <select id="getUserByDepartId" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username,b.departid,b.id as guuid,c.name as departname,a.tel,a.email,a.sex,a.state
+        from sys_user a left join sys_deptuser b on a.username=b.username left join sys_department c
+                                                                                on b.departid=c.id
+         where b.departid=#{departid}
+    </select>
+
+    <select id="getUserByDepartIdPage" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username,b.departid,b.id as guuid,c.name as departname,a.tel,a.email,a.sex,a.state
+        from sys_user a left join sys_deptuser b on a.username=b.username left join sys_department c
+                                                                                on b.departid=c.id
+        where b.departid=#{departid} LIMIT #{page},#{pagesize}
+    </select>
+
+    <select id="getUserByRoleId" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username
+        from sys_user a left join sys_roleusers b on a.username=b.username left join sys_roles c on b.roleid=c.id
+        where b.roleid=#{roleId}
+    </select>
+
+    <select id="getUserByRoleIdPage" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username
+        from sys_user a left join sys_roleusers b on a.username=b.username left join sys_roles c on b.roleid=c.id
+        where b.roleid=#{roleId} LIMIT #{page},#{pagesize}
+    </select>
+
+    <select id="getUserByPositionId" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username
+        from sys_user a left join sys_positionuser b on a.username=b.username left join sys_position c on b.positionid=c.id
+        where b.positionid=#{positionId}
+    </select>
+
+    <select id="getUserByPositionIdPage" resultMap="userMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username
+        from sys_user a left join sys_positionuser b on a.username=b.username left join sys_position c on b.positionid=c.id
+        where b.positionid=#{positionId} LIMIT #{page},#{pagesize}
+    </select>
+
+    <insert id="addUser" keyProperty="id"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        insert into sys_user(id,name,username,tel,email,sex,state,password,roles) values(null,#{name},#{username},#{tel}
+        ,#{email},#{sex},#{state},#{password},#{roles});
+        insert into sys_deptuser(id,username,departid) values(#{guuid},#{username},#{departid});
+    </insert>
+
+    <insert id="addDeptUser"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        insert into sys_deptuser(id,username,departid) values(#{guuid},#{username},#{departid});
+    </insert>
+
+    <insert id="addUserPosition"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        insert into sys_positionuser(id,username,positionid) values(#{guuid},#{username},#{psid});
+    </insert>
+
+    <insert id="addUserRoles"
+            parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        insert into sys_roleusers(id,username,roleid) values(#{guuid},#{username},#{roleid});
+    </insert>
+
+    <update id="updateUser" parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        update sys_user set name=#{name},tel=#{tel},email=#{email},sex=#{sex},state=#{state} where id=#{id};
+        update sys_deptuser set departid=#{departid} where id=#{guuid};
+    </update>
+
+    <update id="updatePwd" parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        update sys_user set password=#{pwd} where username=#{username};
+    </update>
+
+    <delete id="deleteUser" parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        delete from sys_user where id=#{id};
+        delete from sys_deptuser where username=#{username};
+        delete from sys_roleusers where username=#{username};
+        delete from sys_usergroup where username=#{username};
+    </delete>
+</mapper>

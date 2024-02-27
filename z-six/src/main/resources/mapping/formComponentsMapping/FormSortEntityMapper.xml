@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.formComponentsMapper.FormSortEntityMapper">
+    <select id="formSortList" parameterType="com.activiti.z_six.entity.formComponents.FormSortEntity"
+            resultType="com.activiti.z_six.entity.formComponents.FormSortEntity">
+        select * from ac_sl_formSort
+    </select>
+    <select id="formSort" parameterType="com.activiti.z_six.entity.formComponents.FormSortEntity"
+            resultType="com.activiti.z_six.entity.formComponents.FormSortEntity">
+        select * from ac_sl_formSort where id=#{id}
+    </select>
+    <insert id="addFormSort" parameterType="com.activiti.z_six.entity.formComponents.FormSortEntity" keyProperty="id">
+        insert into ac_sl_formSort(id,name,parentNo) values(#{id},#{name},#{parentNo})
+    </insert>
+    <update id="updateFormSort" parameterType="com.activiti.z_six.entity.formComponents.FormSortEntity">
+        update ac_sl_formSort set name=#{name},parentNo=#{parentNo} where id=#{id}
+    </update>
+    <delete id="deleteFormSort" parameterType="com.activiti.z_six.entity.formComponents.FormSortEntity">
+        delete from ac_sl_formSort where id=#{id}
+    </delete>
+</mapper>

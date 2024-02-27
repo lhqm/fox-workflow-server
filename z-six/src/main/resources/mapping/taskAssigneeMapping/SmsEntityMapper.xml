@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.SmsEntityMapper">
+    <select id="smsList" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.SmsEntity">
+        select a.* from sys_sms a left join sys_user b on a.sender=b.username where del_flag=1 and a.toUser=#{toUser}
+        <if test="status!='' and status!=null">
+            and a.state=#{status}
+        </if>
+        and a.smsType='流程审核'
+        order by a.rdt desc LIMIT #{pageNum},#{pagesize}
+    </select>
+    <select id="smsListNum" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.SmsEntity">
+        select a.* from sys_sms a left join sys_user b on a.sender=b.username where a.del_flag=1 and a.toUser=#{toUser}
+        <if test="status!='' and status!=null">
+            and a.state=#{status}
+        </if>
+            and a.smsType='流程审核'
+    </select>
+    <select id="ccSmsList" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.SmsEntity">
+        select a.id, a.proce_inst_id,a.title,a.rdt,b.name as sender,a.state from sys_sms a left join sys_user b on a.sender=b.username where del_flag=1 and a.toUser=#{toUser}
+        <if test="status!='' and status!=null">
+            and a.state=#{status}
+        </if>
+        and a.smsType='流程知会'
+        order by a.rdt desc LIMIT #{pageNum},#{pagesize}
+    </select>
+    <select id="ccSmsListNum" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.SmsEntity">
+        select a.id, a.proce_inst_id,a.title,a.rdt,b.name as sender,a.state from sys_sms a left join sys_user b on a.sender=b.username where a.del_flag=1 and a.toUser=#{toUser}
+        <if test="status!='' and status!=null">
+            and a.state=#{status}
+        </if>
+        and a.smsType='流程知会'
+    </select>
+    <insert id="addSms" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity" keyProperty="id">
+        insert into sys_sms(id,proce_inst_id,msgCont,title,rdt,sender,toUser,state,smsType,del_flag)
+        values(#{id},#{proce_inst_id},#{msgCont},#{title},#{rdt},#{sender},#{toUser},#{state},#{smsType},1)
+    </insert>
+    <update id="updateState" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity">
+        update sys_sms set state='1' where id=#{id}
+    </update>
+    <update id="deleteSms" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity">
+        update sys_sms set del_flag='0' where id=#{id}
+    </update>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.activiti.z_six.mapper.AttachmentMapper">
+    <insert id="addAtt" parameterType="com.activiti.z_six.entity.Attachment" keyProperty="id">
+       INSERT INTO `attachment`(`id`, `genwork_id`, `path`, `name`, `del_flag`,`module_name`,`rdt`) VALUES (#{id}, #{genworkId}, #{path}, #{name}, '0',#{moduleName},#{rdt});
+
+    </insert>
+    <delete id="deleteAttByGenerWork" parameterType="com.activiti.z_six.entity.Attachment">
+        delete from attachment where genwork_id=#{arg0} and module_name=#{arg1}
+    </delete>
+
+</mapper>

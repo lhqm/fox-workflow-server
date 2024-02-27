@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.activiti.z_six.mapper.menu.MenuMapper">
+    <select id="getMenu" resultType="com.activiti.z_six.entity.menu.MenuEntity"
+            parameterType="com.activiti.z_six.entity.menu.MenuEntity">
+        select menuId,menuName,parentId,orderNum,path,component,query,isFrame,menuType,visible,
+        status,perms,icon,createTime,remark from sys_menu where menuId=#{menuId}
+    </select>
+    <select id="getMenuList" resultType="com.activiti.z_six.entity.menu.MenuEntity"
+            parameterType="com.activiti.z_six.entity.menu.MenuEntity">
+        select menuId,menuName,parentId,orderNum,path,component,query,isFrame,menuType,visible,
+               status,perms,icon,createTime,remark from sys_menu where 1=1
+        <if test="menuName!=null and menuName!=''">
+            and menuName like concat('%',#{menuName},'%')
+        </if>
+        <if test="status!=null and status!=''">
+            and status =#{status}
+        </if>
+         ORDER BY orderNum
+    </select>
+    <select id="getUserMenuList" parameterType="com.activiti.z_six.entity.menu.UserMenuEntity"
+            resultType="com.activiti.z_six.entity.menu.UserMenuEntity">
+        select menuId,parentId,isFrame,path,path as name,menuName as title,visible as 'show',
+        icon as iconSvg,component,query from sys_menu
+        <if test="userId!='admin'">
+            where menuId in(select menuId from sys_role_menu where roleId
+               in(select roleid from sys_roleusers where username=#{userId}))
+        </if>
+        order by orderNum
+    </select>
+    <select id="getRoleMenus" parameterType="com.activiti.z_six.dto.orgDto.SysRoleMenu"
+            resultType="com.activiti.z_six.dto.orgDto.SysRoleMenu">
+        select * from sys_role_menu where roleId=#{id}
+    </select>
+    <update id="updayeMenu" parameterType="com.activiti.z_six.entity.menu.MenuEntity">
+        update sys_menu set menuName=#{menuName},parentId=#{parentId},orderNum=#{orderNum},path=#{path},
+                            component=#{component}, query=#{query}, isFrame=#{isFrame},menuType=#{menuType},
+                            visible=#{visible},status=#{status},perms=#{perms},icon=#{icon},
+                            updateBy=#{updateBy},updateTime=#{updateTime},remark=#{remark}
+                        where menuId=#{menuId}
+    </update>
+    <insert id="addMenu" parameterType="com.activiti.z_six.entity.menu.MenuEntity">
+        insert into sys_menu(menuId,menuName,parentId,orderNum,path,component,query,isFrame,menuType,visible,
+                             status,perms,icon,createBy,createTime,remark) values(#{menuId},#{menuName},#{parentId},
+                               #{orderNum},#{path},#{component},#{query},#{isFrame},#{menuType},#{visible},
+                                                                         #{status},#{perms},#{icon},
+                                                                         #{createBy},#{createTime},#{remark})
+    </insert>
+    <delete id="deleteMenu" parameterType="com.activiti.z_six.entity.menu.MenuEntity">
+        delete from sys_menu where menuId=#{menuId}
+    </delete>
+</mapper>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.processMapper.ProcessEntityMapper">
+    <update id="updateProcessEntity" parameterType="com.activiti.z_six.entity.process.ProcessEntity">
+        update act_re_procdef set engine_version_=#{engine_version_},name_=#{name_} where deployment_id_=#{deployment_id_}
+    </update>
+</mapper>

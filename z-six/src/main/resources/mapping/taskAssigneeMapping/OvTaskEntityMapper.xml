@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.OvTaskEntityMapper">
+
+    <select id="ovTaskEntity" parameterType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity">
+        select * from act_ru_task where id_=#{id}
+    </select>
+
+    <select id="ovTaskEntityList" parameterType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity">
+        select * from act_ru_task where assignee_=#{assignee_} and proc_def_id_=#{proc_def_id_}
+    </select>
+
+    <select id="ovTaskEntityByProcessInsId" parameterType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity">
+        select * from act_ru_task where  proc_inst_id_=#{processInsid}
+    </select>
+
+    <update id="setTaskStatus" parameterType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity">
+        update act_ru_task set name_=#{name_},task_def_key_=#{task_def_key_},assignee_=#{assignee_} where id_=#{id_};
+        update act_ru_identitylink set user_id_=#{assignee_} where TASK_ID_=#{id_}
+    </update>
+    <update id="setPrcoInstStatus" parameterType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity">
+        update act_hi_procinst set end_time_=#{end_time} where proc_inst_id_=#{proc_inst_id}
+    </update>
+    <update id="setPrcoInstReason" parameterType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity">
+        update act_hi_procinst set delete_reason_=#{delete_reason} where proc_inst_id_=#{proc_inst_id};
+        update act_hi_actinst set delete_reason_=#{delete_reason} where proc_inst_id_=#{proc_inst_id}
+    </update>
+    <update id="setTaskStatusToReturn" parameterType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity">
+        update act_ru_task set name_=#{name_},task_def_key_=#{task_def_key_},assignee_=#{assignee_} where id_=#{id_};
+        update act_ru_execution set act_id_=#{task_def_key_} where proc_inst_id_=#{proc_inst_id_} and proc_def_id_=#{proc_def_id_} and act_id_=#{execution_task_def_key_};
+        update act_ru_identitylink set user_id_=#{assignee_} where TASK_ID_=#{id_};
+    </update>
+    <delete id="delete" parameterType="com.activiti.z_six.entity.taskAssignee.OvTaskEntity">
+        delete from act_ru_identitylink where TASK_ID_=#{id_} or PROC_INST_ID_=#{proc_inst_id_};
+        delete from act_ru_variable where PROC_INST_ID_=#{proc_inst_id_};
+        delete from act_ru_task where id_=#{id_};
+        delete from act_ru_execution where proc_inst_id_=#{proc_inst_id_} and proc_def_id_=#{proc_def_id_}
+    </delete>
+</mapper>

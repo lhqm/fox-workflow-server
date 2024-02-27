@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.ApprovalTrackMapper">
+    <insert id="addApprovalTrack" parameterType="com.activiti.z_six.entity.taskAssignee.ApprovalTrack">
+        insert into act_sl_processtrack(uuid,userTaskId,userTaskName,user,rdt,msg,
+                                        msgFiles,actionType,actionName,process_ints_id,filePath)
+                                values(#{uuid},#{userTaskId},#{userTaskName},#{user},
+                                       #{rdt},#{msg},#{msgFiles},#{actionType},#{actionName},
+                                       #{process_ints_id},#{filePath})
+    </insert>
+    <select id="approvalTracks" parameterType="com.activiti.z_six.entity.taskAssignee.ApprovalTrack"
+            resultType="com.activiti.z_six.entity.taskAssignee.ApprovalTrack">
+        select a.* ,b.name as userName from act_sl_processtrack a left join sys_user b on a.user=b.username
+        where a.process_ints_id=#{process_ints_id}  order by a.rdt desc
+    </select>
+    <select id="getUserTaskTrack" parameterType="com.activiti.z_six.entity.taskAssignee.ApprovalTrack"
+            resultType="com.activiti.z_six.entity.taskAssignee.ApprovalTrack">
+        select a.* ,b.name as userName from act_sl_processtrack a left join sys_user b on a.user=b.username
+        where a.process_ints_id=#{process_ints_id} order by a.rdt desc
+    </select>
+</mapper>

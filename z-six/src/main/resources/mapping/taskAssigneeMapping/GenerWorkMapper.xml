@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.GenerWorkMapper">
+    <select id="generWork" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork"
+            resultType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+        select *
+        from ac_sl_generwork
+        where id = #{id}
+    </select>
+    <select id="getGenerWorkByInst" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork"
+            resultType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+        select *
+        from ac_sl_generwork
+        where proce_inst_id = #{proce_inst_id}
+    </select>
+    <select id="getDoneList" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork"
+            resultType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+        SELECT * from(
+        select a.START_USER_ID_ as starter,a.NAME_ as flowName,a.END_TIME_ as endtime,
+        a.PROC_INST_ID_ as proce_inst_id,b.createtime,b.title,
+        a.BUSINESS_KEY_ as id,b.map_json,b.data_json,c.ACT_TYPE_ as act_type,d.form_type,d.form_url,
+        ROW_NUMBER() OVER(PARTITION BY a.PROC_INST_ID_) rn
+        from act_hi_procinst a
+        left join ac_sl_generwork b on a.PROC_INST_ID_=b.proce_inst_id
+        left join (select ACT_TYPE_,PROC_INST_ID_,ACT_ID_ from act_hi_actinst where ASSIGNEE_=#{username} order by
+        END_TIME_ ) c
+        on a.PROC_INST_ID_=c.PROC_INST_ID_ left join ac_sl_flowelementattrs d on c.ACT_ID_=d.task_def_key
+        where (a.PROC_INST_ID_ in(select PROC_INST_ID_ from act_hi_actinst where ASSIGNEE_=#{username})
+        or a.start_user_id_=#{username})
+        and (a.delete_reason_ !='deleteTask' or a.delete_reason_ =''
+        or a.delete_reason_ IS NULL or a.delete_reason_='refuse' )
+        <if test="flowName!=null and flowName!=''">
+            and a.NAME_ like concat('%',#{flowName},'%')
+        </if>
+        ) AS subq
+        WHERE rn=1
+        -- GROUP BY a.PROC_INST_ID_
+        ORDER BY createtime DESC LIMIT #{pageNum},#{pagesize}
+    </select>
+    <select id="getDoneListNum" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork"
+            resultType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+        select a.START_USER_ID_ as starter,a.NAME_ as flowName,a.END_TIME_ as endtime,
+        a.PROC_INST_ID_ as proce_inst_id,b.createtime,
+        a.BUSINESS_KEY_ as id,b.map_json,b.data_json from act_hi_procinst a
+        left join ac_sl_generwork b on a.PROC_INST_ID_=b.proce_inst_id
+        where (a.PROC_INST_ID_ in(select PROC_INST_ID_ from act_hi_actinst where ASSIGNEE_=#{username})
+        or a.start_user_id_=#{username})
+        and (a.delete_reason_ !='deleteTask' or a.delete_reason_ =''
+        or a.delete_reason_ IS NULL or a.delete_reason_='refuse')
+        <if test="flowName!=null and flowName!=''">
+            and a.NAME_ like concat('%',#{flowName},'%')
+        </if>
+    </select>
+    <select id="getTodoList" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork"
+            resultType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+select * from (
+        select a.PROC_INST_ID_ as proce_inst_id, a.ID_ as taskid,d.NAME_ as flowName,a.NAME_ as
+        taskName,d.START_USER_ID_ as starter,
+        c.createtime,c.data_json,c.title,d.BUSINESS_KEY_ as id,d.END_TIME_ as endtime,e.form_type,e.form_url,
+        ROW_NUMBER() OVER(PARTITION BY a.PROC_INST_ID_) rn from
+        act_ru_task a left join act_ru_identitylink b
+        on a.ID_=b.TASK_ID_ left join ac_sl_generwork c on a.PROC_INST_ID_=c.proce_inst_id
+        left join act_hi_procinst d on a.PROC_INST_ID_=d.PROC_INST_ID_ left join ac_sl_flowelementattrs e on
+        a.TASK_DEF_KEY_=e.task_def_key
+        where b.USER_ID_=#{username} and (d.delete_reason_ !='deleteTask' or d.delete_reason_ =''
+        or d.delete_reason_ IS NULL or d.delete_reason_='refuse')
+        <if test="flowName!=null and flowName!=''">
+            and d.NAME_ like concat('%',#{flowName},'%')
+        </if>
+        -- GROUP BY a.PROC_INST_ID_
+        order by c.createtime DESC )
+        AS subq
+        where rn=1
+        LIMIT #{pageNum},#{pagesize}
+    </select>
+    <select id="getTodoListNum" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork"
+            resultType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+        select * from(
+        select a.PROC_INST_ID_ as proce_inst_id, a.ID_ as taskid,d.NAME_ as flowName,a.NAME_ as
+        taskName,d.START_USER_ID_ as starter,
+        ROW_NUMBER() OVER(PARTITION BY a.PROC_INST_ID_ ) rn,
+        c.createtime,c.data_json,d.BUSINESS_KEY_ as id,d.END_TIME_ as endtime from act_ru_task a left join
+        act_ru_identitylink b
+        on a.ID_=b.TASK_ID_ left join ac_sl_generwork c on a.PROC_INST_ID_=c.proce_inst_id
+        left join act_hi_procinst d on a.PROC_INST_ID_=d.PROC_INST_ID_ where b.USER_ID_=#{username}
+        and (d.delete_reason_ !='deleteTask' or d.delete_reason_ =''
+        or d.delete_reason_ IS NULL or d.delete_reason_='refuse')
+        <if test="flowName!=null and flowName!=''">
+            and d.NAME_ like concat('%',#{flowName},'%')
+        </if>)
+        AS subq
+        where rn=1
+        -- GROUP BY a.PROC_INST_ID_
+    </select>
+    <insert id="insertGenerWork" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork" keyProperty="id">
+        insert into ac_sl_generwork(id, processkey, createtime, starter, map_json, data_json)
+        values (#{id}, #{processkey}, #{createtime}, #{starter}, #{map_json}, #{data_json})
+    </insert>
+    <update id="updateGenerWork" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+        update ac_sl_generwork
+        set title=#{title},
+            createtime=#{createtime},
+            starter=#{starter},
+            map_json=#{map_json},
+            data_json=#{data_json}
+        where id = #{id}
+    </update>
+    <update id="updateFlowWork" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+        update ac_sl_generwork
+        set proce_inst_id=#{proce_inst_id},
+            title=#{title},
+            createtime=#{createtime}
+        where id = #{id}
+    </update>
+    <update id="setGenerWorkTitle" parameterType="com.activiti.z_six.entity.taskAssignee.GenerWork">
+        update ac_sl_generwork
+        set title=#{title}
+        where id = #{id}
+    </update>
+    <delete id="deleteGenerWork" parameterType="String">
+        delete from ac_sl_generwork where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteFrmData" parameterType="String">
+        delete from ${mainTable} where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteFrmSubData" parameterType="String">
+        delete from ${mainTable} where fk_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

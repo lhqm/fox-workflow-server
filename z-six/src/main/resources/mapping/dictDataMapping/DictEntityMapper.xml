@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.dict.DictMapper">
+    <select id="dictDataEntity" parameterType="com.activiti.z_six.entity.dictData.DictDataEntity"
+            resultType="com.activiti.z_six.entity.dictData.DictDataEntity">
+        select no,name,dataType,status,doc,remark,createBy,createTime,updateBy,updateTime
+        from sys_dict where no=#{no}
+    </select>
+    <select id="getDicts" parameterType="com.activiti.z_six.entity.dictData.DictDataEntity"
+            resultType="com.activiti.z_six.entity.dictData.DictDataEntity">
+        select no,name,dataType,status,doc,remark,createBy,createTime,updateBy,updateTime
+        from sys_dict where 1=1
+        <if test="name!=null and name!=''">
+            and name like concat('%',#{name},'%')
+        </if>
+        <if test="status!=null and status!=''">
+            and status=#{status}
+        </if>
+    </select>
+    <select id="getDictsPage" parameterType="com.activiti.z_six.entity.dictData.DictDataEntity"
+            resultType="com.activiti.z_six.entity.dictData.DictDataEntity">
+        select no,name,dataType,status,doc,remark,createBy,createTime,updateBy,updateTime
+        from sys_dict where 1=1
+        <if test="name!=null and name!=''">
+            and name like concat('%',#{name},'%')
+        </if>
+        <if test="status!=null and status!=''">
+            and status=#{status}
+        </if>
+        LIMIT #{page},#{pageSize}
+    </select>
+    <insert id="addDict" parameterType="com.activiti.z_six.entity.dictData.DictDataEntity">
+        insert into sys_dict(no,name,dataType,status,doc,remark,createBy,createTime)
+        values(#{no},#{name},#{dataType},#{status},#{doc},#{remark},#{createBy},#{createTime})
+    </insert>
+    <update id="updateDict" parameterType="com.activiti.z_six.entity.dictData.DictDataEntity">
+        update sys_dict set name=#{name},dataType=#{dataType},status=#{status},doc=#{doc},
+                            remark=#{remark}, updateBy=#{updateBy}, updateTime=#{updateTime}  where no=#{no}
+    </update>
+    <delete id="deleteDict" parameterType="java.util.ArrayList">
+        delete from sys_dict where no in
+        <foreach collection="dictDataEntities" open="(" close=")" separator="," item="item">
+            #{item.no}
+        </foreach>
+
+    </delete>
+</mapper>

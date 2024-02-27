@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.AssigneeUserMapper">
+    <select id="getAssigneeUserWithTaskKey" resultType="com.activiti.z_six.entity.taskAssignee.AssigneeUserEntity"
+            parameterType="com.activiti.z_six.entity.taskAssignee.AssigneeUserEntity">
+        select *
+        from (select *, ROW_NUMBER() OVER(PARTITION BY usertaskid) rn
+              from (select a.username, a.usertaskid, b.name
+                    from as_taskuser a
+                             left join sys_user b on a.username = b.username
+                    where a.usertaskid = #{usertaskid}
+                      and a.ruleName = #{ruleName}
+                    union
+                    select a.username, a.usertaskid, b.name
+                    from as_taskuser a
+                             left join sys_department b on a.username = b.id
+                    where a.usertaskid = #{usertaskid}
+                      and a.ruleName = #{ruleName}
+                    union
+                    select a.username, a.usertaskid, b.name
+                    from as_taskuser a
+                             left join sys_roles b on a.username = b.id
+                    where a.usertaskid = #{usertaskid}
+                      and a.ruleName = #{ruleName}
+                    union
+                    select a.username, a.usertaskid, b.name
+                    from as_taskuser a
+                             left join sys_position b on a.username = b.id
+                    where a.usertaskid = #{usertaskid}
+                      and a.ruleName = #{ruleName}) t)
+                subq
+                where rn=1
+--         GROUP BY t.username
+    </select>
+    <select id="getAssigneeDSR" parameterType="com.activiti.z_six.entity.taskAssignee.AssigneeDSREntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.AssigneeDSREntity">
+        select id,usertaskid,targetid,dsr from as_taskdsr where usertaskid=#{usertaskid}
+    </select>
+    <select id="getManuallySelectDSR" parameterType="com.activiti.z_six.entity.taskAssignee.ManuallySelectEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.ManuallySelectEntity">
+        select id,task_def_id,username from ac_sl_manuallyselect where task_def_id=#{task_def_id}
+                                                                   and proc_inst_id=#{proc_inst_id}
+    </select>
+    <insert id="setAssigneeUser" parameterType="java.util.List">
+        insert into as_taskuser(id,usertaskid,username,ruleName) values
+        <foreach collection="list" index="index" separator="," item="item">
+            (#{item.id},#{item.usertaskid},#{item.username},#{item.ruleName})
+        </foreach>
+    </insert>
+    <insert id="setAssigneeByDeptAndStionOrRole" parameterType="java.util.List">
+        insert into as_taskdsr(id,usertaskid,targetId,dsr) values
+        <foreach collection="list" index="index" separator="," item="item">
+            (#{item.id},#{item.usertaskid},#{item.targetId},#{item.dsr})
+        </foreach>
+    </insert>
+    <insert id="setAssigneeByManuallySelect" parameterType="java.util.List">
+        insert into ac_sl_manuallyselect(id,task_def_id,username,proc_inst_id) values
+        <foreach collection="list" index="index" separator="," item="item">
+            (#{item.id},#{item.task_def_id},#{item.username},#{item.proc_inst_id})
+        </foreach>
+    </insert>
+    <delete id="deleteAssigneeUser" parameterType="com.activiti.z_six.entity.taskAssignee.AssigneeUserEntity">
+        delete from as_taskuser where usertaskid=#{usertaskid} and username=#{username}
+    </delete>
+
+    <delete id="deleteAssigneeManuallySelect" parameterType="com.activiti.z_six.entity.taskAssignee.ManuallySelectEntity">
+        delete from ac_sl_manuallyselect where task_def_id=#{task_def_id} and proc_inst_id=#{proc_inst_id}
+    </delete>
+
+    <delete id="deleteAssigneeUserByTaskid" parameterType="com.activiti.z_six.entity.taskAssignee.AssigneeUserEntity">
+        delete from as_taskuser where usertaskid=#{usertaskid};
+        delete from as_taskdsr where usertaskid=#{usertaskid};
+    </delete>
+</mapper>

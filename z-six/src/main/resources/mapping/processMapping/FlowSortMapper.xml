@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.processMapper.FlowSortMapper">
+
+    <select id="getFlowSort" resultType="com.activiti.z_six.entity.process.FlowSort">
+        select * from ac_sl_flowsort LIMIT #{arg0},#{arg1}
+    </select>
+
+    <select id="getFlowSortTotal" resultType="com.activiti.z_six.entity.process.FlowSort">
+        select count(*) from ac_sl_flowsort
+    </select>
+
+    <select id="getFlowSortAll" resultType="com.activiti.z_six.entity.process.FlowSort">
+        select * from ac_sl_flowsort
+    </select>
+
+    <insert id="addFlowSort" useGeneratedKeys="true" keyProperty="id" parameterType="com.activiti.z_six.entity.process.FlowSort">
+        insert into ac_sl_flowsort(id,name,parentid) values(null,#{name},#{parentid})
+    </insert>
+
+    <update id="saveFlowSort" parameterType="com.activiti.z_six.entity.process.FlowSort">
+        update ac_sl_flowsort set name=#{name},parentid=#{parentid} where id=#{id}
+    </update>
+
+    <delete id="deleteFlowSort" parameterType="com.activiti.z_six.entity.process.FlowSort">
+        delete from ac_sl_flowsort where id=#{id}
+    </delete>
+
+</mapper>

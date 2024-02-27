@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.ReturnWorkMapper">
+    <select id="returnWorkList" parameterType="com.activiti.z_six.entity.taskAssignee.ReturnWorkEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.ReturnWorkEntity">
+        select * from ac_sl_returnwork where returnuser=#{username}
+    </select>
+    <select id="getReturnWork" parameterType="com.activiti.z_six.entity.taskAssignee.ReturnWorkEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.ReturnWorkEntity">
+        select * from ac_sl_returnwork where taskid=#{taskid}  Order by return_time desc LIMIT 0,1
+    </select>
+    <select id="getReturnWay" parameterType="com.activiti.z_six.entity.taskAssignee.ReturnWorkEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.ReturnWorkEntity">
+        select * from ac_sl_returnwork where proc_inst_id=#{proc_inst_id}  Order by return_time desc LIMIT 0,1
+    </select>
+    <insert id="createReturnDetailed" parameterType="com.activiti.z_six.entity.taskAssignee.ReturnWorkEntity" keyProperty="id">
+        insert into ac_sl_returnwork(id,proc_def_id,proc_inst_id,taskid,return_act_id,return_act_name,returnTo_act_id,returnTo_act_name,
+                                     returnUser,return_time,return_msg,variables) values(#{id},#{proc_def_id},#{proc_inst_id},#{taskid},#{return_act_id},
+                                                                                         #{return_act_name},#{returnTo_act_id},
+                                                                                         #{returnTo_act_name},#{returnUser},
+                                                                                         #{return_time},#{return_msg},
+                                                                                         #{variables})
+    </insert>
+
+    <delete id="deleteReturn" parameterType="com.activiti.z_six.entity.taskAssignee.ReturnWorkEntity">
+        delete FROM ac_sl_returnwork where id=#{id}
+    </delete>
+</mapper>

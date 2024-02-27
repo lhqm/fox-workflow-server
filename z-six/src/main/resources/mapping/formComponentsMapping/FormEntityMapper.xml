@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.formComponentsMapper.FormEntityMapper">
+    <select id="formEntity" parameterType="com.activiti.z_six.entity.formComponents.FormEntity"
+            resultType="com.activiti.z_six.entity.formComponents.FormEntity">
+        select a.id,a.name,a.createTime,a.formSort,b.name as formSortName,a.form_event,a.form_event_link,a.form_data_table,
+               a.form_sub_tables,a.form_json from ac_sl_formMap a left join ac_sl_formSort b on a.formSort=b.id
+            where a.id=#{id}
+    </select>
+    <select id="formList" parameterType="com.activiti.z_six.entity.formComponents.FormEntity"
+            resultType="com.activiti.z_six.entity.formComponents.FormEntity">
+        select a.id,a.name,a.createTime,a.formSort,b.name as formSortName,a.form_event,a.form_event_link,a.form_data_table,
+               a.form_sub_tables,a.form_json from ac_sl_formMap a left join ac_sl_formSort b on a.formSort=b.id
+                                             where a.applicationType='0'
+        <if test="name!=null and name!=''">
+            and a.name like concat('%',#{name},'%')
+        </if>
+        <if test="formSort!='all'">
+            and a.formSort=#{formSort}
+        </if>
+    </select>
+    <select id="formListPage" parameterType="com.activiti.z_six.entity.formComponents.FormEntity"
+            resultType="com.activiti.z_six.entity.formComponents.FormEntity">
+        select a.id,a.name,a.createTime,a.formSort,b.name as formSortName,a.form_event,a.form_event_link,a.form_data_table,
+               a.form_sub_tables,a.form_json from ac_sl_formMap a left join ac_sl_formSort b on a.formSort=b.id
+                where a.applicationType='0'
+        <if test="name!=null and name!=''">
+            and a.name like concat('%',#{name},'%')
+        </if>
+        <if test="formSort!='all'">
+            and a.formSort=#{formSort}
+        </if>
+
+                  LIMIT #{page},#{pagesize}
+    </select>
+    <select id="getFormTree" parameterType="com.activiti.z_six.entity.formComponents.FormEntity"
+            resultType="com.activiti.z_six.entity.formComponents.FormEntity">
+        select id,name,formSort,form_json from ac_sl_formMap where applicationType='0'
+        union
+        select id,name,parentNo as formSort,'' as form_json from ac_sl_formSort
+    </select>
+    <select id="getFormTreeByAdd" parameterType="com.activiti.z_six.entity.formComponents.FormEntity"
+            resultType="com.activiti.z_six.entity.formComponents.FormEntity">
+        select id,name,formSort,form_json from ac_sl_formMap where isApplication='0'
+        union
+        select id,name,parentNo as formSort,'' as form_json from ac_sl_formSort
+    </select>
+    <insert id="addForm" parameterType="com.activiti.z_six.entity.formComponents.FormEntity" keyProperty="id">
+        insert into ac_sl_formMap(id,name,createTime,formSort,form_event,form_event_link,form_data_table,form_sub_tables,form_json,applicationType)
+            values(#{id},#{name},#{createTime},#{formSort},#{form_event},#{form_event_link},#{form_data_table},#{form_sub_tables},#{form_json},'0')
+    </insert>
+    <delete id="deleteForm" parameterType="com.activiti.z_six.entity.formComponents.FormEntity">
+        delete from ac_sl_formMap where id=#{id}
+    </delete>
+    <update id="updateForm" parameterType="com.activiti.z_six.entity.formComponents.FormEntity">
+        update ac_sl_formMap set name=#{name},createTime=#{createTime},formSort=#{formSort},form_event=#{form_event},form_event_link=#{form_event_link},
+                                 form_data_table=#{form_data_table},form_sub_tables=#{form_sub_tables},form_json=#{form_json} where id=#{id}
+    </update>
+
+    <select id="isTableExist" parameterType="string" resultType="int">
+        select count(*) from information_schema.TABLES where table_name = #{tableName} and table_schema=#{dataSourceName}
+    </select>
+    <select id="findFieldByTableName" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            COLUMN_NAME
+        FROM
+            information_schema.COLUMNS
+        WHERE
+            table_name = #{tableName};
+    </select>
+    <select id="findFieldByTable" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            COLUMN_NAME,
+            COLUMN_COMMENT
+        FROM
+            information_schema.COLUMNS
+        WHERE
+            table_name = #{tableName}
+        <if test="table_schema!=null and name!=''">
+            and TABLE_SCHEMA = #{table_schema}
+        </if>
+    </select>
+    <update id="AlterTableAddField" parameterType="com.activiti.z_six.entity.formComponents.CreateTable">
+        ALTER TABLE ${tableName}
+            <trim suffixOverrides=",">
+                <foreach collection="customTables" item="item" separator="">
+                    <if test="item.choose == true">
+                        ADD ${item.createTableFiledName} ${item.fieldType}
+                    <choose>
+                        <when test="item.isNotNull != null and item.isNotNull !=''">
+                            NOT NULL
+                        </when>
+                    </choose>
+                    DEFAULT
+                    <choose>
+                        <when test="item.defaultValue != null and item.defaultValue !=''">
+                            ${item.defaultValue}
+                        </when>
+                        <otherwise>
+                            NULL
+                        </otherwise>
+                    </choose>
+                    COMMENT
+                    <choose>
+                        <when test="item.comment != null and item.comment !=''">
+                            '${item.comment}'
+                        </when>
+                        <otherwise>
+                            '${item.createTableFiledName}'
+                        </otherwise>
+                    </choose>
+                    ,
+                    </if>
+                </foreach>
+            </trim>
+    </update>
+    <update id="createFormTable" parameterType="com.activiti.z_six.entity.formComponents.CreateTable">
+        CREATE TABLE IF NOT EXISTS  ${tableName} (
+        id varchar(100)  NOT NULL  COMMENT '编号',
+        rdt varchar(100)    COMMENT '创建时间',
+        <foreach collection="customTables" item="item" separator="">
+            <if test="item.choose == true">
+                ${item.createTableFiledName} ${item.fieldType}
+                <choose>
+                    <when test="item.isNotNull != null and item.isNotNull !=''">
+                        NOT NULL
+                    </when>
+                </choose>
+                DEFAULT
+                <choose>
+                    <when test="item.defaultValue != null and item.defaultValue !=''">
+                        ${item.defaultValue}
+                    </when>
+                    <otherwise>
+                        NULL
+                    </otherwise>
+                </choose>
+                COMMENT
+                <choose>
+                    <when test="item.comment != null and item.comment !=''">
+                        '${item.comment}'
+                    </when>
+                    <otherwise>
+                        '${item.createTableFiledName}'
+                    </otherwise>
+                </choose>
+                ,
+            </if>
+        </foreach>
+        PRIMARY KEY (id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    </update>
+</mapper>

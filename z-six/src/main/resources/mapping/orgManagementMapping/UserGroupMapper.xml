@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.activiti.z_six.mapper.orgmanagementMapper.UserGroupMapper">
+    <insert id="addUserGroup" parameterType="java.util.ArrayList">
+        insert into sys_usergroup(id,username,groupid) values
+        <foreach collection="groupUser" index="index" separator="," item="item">
+            (#{item.id},#{item.username},#{item.groupid})
+        </foreach>
+    </insert>
+    <delete id="deleteUserGroup" parameterType="com.activiti.z_six.entity.orgmanagement.UserGroupEntity">
+        delete from sys_usergroup where username=#{username} and groupid=#{groupid}
+    </delete>
+</mapper>

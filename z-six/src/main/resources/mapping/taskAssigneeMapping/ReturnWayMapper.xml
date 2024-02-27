@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.ReturnWayMapper">
+    <select id="getReturnWay" parameterType="com.activiti.z_six.entity.taskAssignee.ReturnWayEntity"
+            resultType="com.activiti.z_six.entity.taskAssignee.ReturnWayEntity">
+        select * from ac_sl_flowelementattrs where task_def_key=#{task_def_id}
+    </select>
+</mapper>

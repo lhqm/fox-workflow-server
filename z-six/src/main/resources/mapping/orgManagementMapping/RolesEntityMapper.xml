@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.orgmanagementMapper.RolesEntityMapper">
+    <select id="rolesList" parameterType="com.activiti.z_six.entity.orgmanagement.RolesEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.RolesEntity">
+        select * from sys_roles where 1=1
+        <if test="name!=null and name!=''">
+            and name like concat('%',#{name},'%')
+        </if>
+    </select>
+    <select id="rolesListPage" parameterType="com.activiti.z_six.entity.orgmanagement.RolesEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.RolesEntity">
+        select * from sys_roles where 1=1
+        <if test="name!=null and name!=''">
+            and name like concat('%',#{name},'%')
+        </if>
+        LIMIT #{page},#{pagesize}
+    </select>
+    <select id="rolesListByUser" parameterType="com.activiti.z_six.entity.orgmanagement.RolesEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.RolesEntity">
+        select a.roleid as id,b.name from sys_roleusers a left join sys_roles b on a.roleid=b.id
+        where a.username=#{username}
+    </select>
+    <select id="rolesEntity" parameterType="com.activiti.z_six.entity.orgmanagement.RolesEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.RolesEntity">
+        select * from sys_roles where id=#{id}
+    </select>
+    <select id="roleDeptTreeselect" parameterType="com.activiti.z_six.dto.orgDto.SysRoleDept"
+            resultType="com.activiti.z_six.dto.orgDto.SysRoleDept">
+        select * from sys_role_dept where role_id=#{id}
+    </select>
+    <insert id="addRoles" parameterType="com.activiti.z_six.entity.orgmanagement.RolesEntity" keyProperty="id">
+        insert into sys_roles(id,name,data_scope) values(#{id},#{name},#{data_scope})
+    </insert>
+    <insert id="batchRoleMenu">
+        insert into sys_role_menu(roleId, menuId) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.roleId},#{item.menuId})
+        </foreach>
+    </insert>
+    <insert id="batchRoleDept">
+        insert into sys_role_dept(role_Id, dept_Id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.role_Id},#{item.dept_Id})
+        </foreach>
+    </insert>
+    <update id="updateRoles" parameterType="com.activiti.z_six.entity.orgmanagement.RolesEntity">
+        update sys_roles set name=#{name},data_scope=#{data_scope} where id=#{id}
+    </update>
+    <delete id="deleteRoles" parameterType="com.activiti.z_six.entity.orgmanagement.RolesEntity">
+        delete  from sys_roles where id=#{id};
+        delete from sys_roleusers where roleid=#{id};
+        delete from sys_role_menu where roleId=#{id};
+        delete from sys_role_dept where role_id=#{id}
+    </delete>
+    <delete id="deleteRoleUser" parameterType="com.activiti.z_six.entity.orgmanagement.RolesEntity">
+        delete from sys_roleusers where username=#{username}
+    </delete>
+    <delete id="deleteRoleMenu">
+        delete from sys_role_menu where roleId =#{id}
+    </delete>
+    <delete id="deleteDataScope">
+        delete from sys_role_dept where role_id =#{id}
+    </delete>
+</mapper>

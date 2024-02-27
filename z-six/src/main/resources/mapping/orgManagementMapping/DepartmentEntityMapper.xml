@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.orgmanagementMapper.DepartmentEntityMapper">
+
+    <resultMap id="deptResultMap" type="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="parentid" property="parentid" jdbcType="INTEGER"></result>
+        <result column="managername" property="managername" jdbcType="VARCHAR"></result>
+        <result column="manager" property="manager" jdbcType="VARCHAR"></result>
+        <result column="leadername" property="leadername" jdbcType="VARCHAR"></result>
+        <result column="leader" property="leader" jdbcType="VARCHAR"></result>
+        <result column="companyid" property="companyid" jdbcType="INTEGER"></result>
+        <result column="companyname" property="companyname" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <select id="getDepartmentList" resultMap="deptResultMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        select a.id,a.name,a.parentid,a.manager,c.name as managername,d.name as leadername,
+               a.leader,a.companyid,b.name as companyname
+                from sys_department a left join sys_company b
+                on a.companyid=b.id left join sys_user c on a.manager=c.username
+                left join sys_user d on a.leader=d.username where 1=1
+        <if test="parentId!=null and parentId!=''">
+            and (a.id=#{parentId} or a.parentId=#{parentId})
+        </if>
+        <if test="name!=null and name!=''">
+            and a.name like concat('%',#{name},'%')
+        </if>
+        <if test="companyid!='all'">
+            and a.companyid =#{companyid}
+        </if>
+    </select>
+    <select id="getDepartmentPage" resultMap="deptResultMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        select a.id,a.name,a.parentid,a.manager,c.name as managername,d.name as leadername,
+        a.leader,a.companyid,b.name as companyname
+        from sys_department a left join sys_company b
+        on a.companyid=b.id left join sys_user c on a.manager=c.username
+        left join sys_user d on a.leader=d.username where 1=1
+        <if test="parentId!=null and parentId!=''">
+            and (a.id=#{parentId} or a.parentId=#{parentId})
+        </if>
+        <if test="name!=null and name!=''">
+            and a.name like concat('%',#{name},'%')
+        </if>
+        <if test="companyid!='all'">
+            and a.companyid =#{companyid}
+        </if>
+
+        LIMIT #{page},#{pageSize}
+    </select>
+
+    <select id="getDeptByCompany" resultMap="deptResultMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        select a.id,a.name,a.parentid,a.manager,c.name as managername,d.name as leadername,
+               a.leader,a.companyid,b.name as companyname
+                from sys_department a left join sys_company b
+                on a.companyid=b.id left join sys_user c on a.manager=c.username
+                left join sys_user d on a.leader=d.username where a.companyid=#{companyid}
+    </select>
+
+    <select id="getDepartmentInfo" resultMap="deptResultMap"
+            parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        select a.id,a.name,a.parentid,a.manager,c.name as managername,d.name as leadername,
+               a.leader,a.companyid,b.name as companyname
+        from sys_department a left join sys_company b
+                                      on a.companyid=b.id left join sys_user c on a.manager=c.username
+                            left join sys_user d on a.leader=d.username where a.id=#{id}
+    </select>
+
+    <insert id="addDepartment" keyProperty="id"
+            parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        insert into sys_department(id,name,parentid,manager,leader,companyid) values(null,#{name},
+                                                                                   #{parentid},#{manager}
+                                                                                   ,#{leader},#{companyid})
+    </insert>
+
+    <update id="updateDepartment" parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        update  sys_department set name=#{name},parentid=#{parentid},manager=#{manager},leader=#{leader},
+                                 companyid=#{companyid} where id=#{id}
+    </update>
+
+    <delete id="deleteDepartment" parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        delete from sys_department where id=#{id}
+    </delete>
+
+    <update id="setDepartmentManager" parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        update sys_department set manager=#{manager} where id=#{id}
+    </update>
+
+    <update id="setDepartmentLeader" parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        update sys_department set leader=#{leader} where id=#{id}
+    </update>
+
+    <update id="updateDeptCompany" parameterType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        update sys_department set companyid=#{companyid} where id=#{id}
+    </update>
+
+</mapper>

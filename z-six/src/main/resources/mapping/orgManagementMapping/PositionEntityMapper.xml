@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.activiti.z_six.mapper.orgmanagementMapper.PositionEntityMapper">
+    <select id="positionList" parameterType="com.activiti.z_six.entity.orgmanagement.PositionEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.PositionEntity">
+        select * from sys_position where 1=1
+        <if test="name!=null and name!=''">
+            and name like concat('%',#{name},'%')
+        </if>
+    </select>
+    <select id="positionListByUser" parameterType="com.activiti.z_six.entity.orgmanagement.PositionEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.PositionEntity">
+        select a.positionid as id,b.name from sys_positionuser a left join sys_position b on a.positionid=b.id
+ where a.username=#{username}
+    </select>
+    <select id="positionEntity" parameterType="com.activiti.z_six.entity.orgmanagement.PositionEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.PositionEntity">
+        select * from sys_position where id=#{id}
+    </select>
+    <select id="positionListPage" parameterType="com.activiti.z_six.entity.orgmanagement.PositionEntity"
+            resultType="com.activiti.z_six.entity.orgmanagement.PositionEntity">
+        select * from sys_position where 1=1
+        <if test="name!=null and name!=''">
+            and name like concat('%',#{name},'%')
+        </if>
+        LIMIT #{page},#{pagesize}
+    </select>
+    <insert id="addPosition" parameterType="com.activiti.z_six.entity.orgmanagement.PositionEntity" keyProperty="id">
+        insert into sys_position(id,name) values(#{id},#{name})
+    </insert>
+    <update id="updatePosition" parameterType="com.activiti.z_six.entity.orgmanagement.PositionEntity">
+        update sys_position set name=#{name} where id=#{id}
+    </update>
+    <delete id="deletePosition" parameterType="com.activiti.z_six.entity.orgmanagement.PositionEntity">
+        delete from sys_position where id=#{id};
+        delete from sys_positionuser where positionid=#{id}
+    </delete>
+    <delete id="deletePositionUser" parameterType="com.activiti.z_six.entity.orgmanagement.PositionEntity">
+        delete from sys_positionuser where username=#{username}
+    </delete>
+</mapper>

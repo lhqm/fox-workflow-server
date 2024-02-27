@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.activiti.z_six.mapper.taskAssigneeMapper.CopyForMapper">
+    <select id="selectByUserData" resultType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select b.id,b.name,a.targetId as username,c.departid,d.name as departname from as_copyfor a
+            left join sys_user b on a.targetId=b.username left join
+            sys_deptuser c on b.username=c.username left join
+              sys_department d on c.departid=d.id where a.task_def_key=#{task_key} and a.autoCCWay=#{autoCCWay}
+    </select>
+    <select id="selectByRoleData"
+            resultType="com.activiti.z_six.entity.orgmanagement.RolesEntity">
+        select a.targetId as id,b.name from as_copyfor a left join sys_roles b on a.targetId=b.id where
+            a.task_def_key=#{task_key} and a.autoCCWay=#{autoCCWay}
+    </select>
+    <select id="selectUsersByRoles" parameterType="java.util.List"
+            resultType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username
+        from sys_user a left join sys_roleusers b on a.username=b.username left join sys_roles c on b.roleid=c.id
+        where b.roleid in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </select>
+    <select id="selectUsersByPositions" parameterType="java.util.List"
+            resultType="com.activiti.z_six.entity.orgmanagement.UserEntity">
+        select a.id, a.name,a.username
+        from sys_user a left join sys_positionuser b on a.username=b.username left join sys_position c on b.positionid=c.id
+        where b.positionid in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </select>
+    <select id="selectByStationData"
+            resultType="com.activiti.z_six.entity.orgmanagement.PositionEntity">
+        select a.targetId as id,b.name from as_copyfor a left join sys_position b on a.targetId=b.id where
+            a.task_def_key=#{task_key} and a.autoCCWay=#{autoCCWay}
+    </select>
+    <insert id="insertCCData" parameterType="java.util.List">
+        insert into as_copyfor(mypk,task_def_key,targetId,ccWay,autoCCWay) values
+        <foreach collection="list" index="index" separator="," item="item">
+            (#{item.mypk},#{item.task_def_key},#{item.targetId},#{item.ccWay},#{item.autoCCWay})
+        </foreach>
+    </insert>
+    <delete id="deleteCCDataByTaskKey" parameterType="com.activiti.z_six.entity.taskAssignee.CopyForEntity">
+        delete from as_copyfor where task_def_key=#{task_def_key}
+    </delete>
+    <delete id="deleteCCDataByProcInstId" parameterType="com.activiti.z_six.entity.taskAssignee.CopyForEntity">
+        delete from as_copyfor where proc_inst_id=#{proc_inst_id}
+    </delete>
+</mapper>
