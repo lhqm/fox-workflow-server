@@ -653,4 +653,16 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
         return "0";
     }
+
+    /***
+     * 通过全限定类名称获取类的直接名称
+     * @param fullClassName 全限定名称
+     * @return 类名
+     */
+    public static String getClassNameByFullClassName(String fullClassName){
+        //通过ASCII码来切割点号。
+        int index = fullClassName.lastIndexOf(46);
+//        如果没命中直接返回，否则返回全限定名称转换后的名称
+        return index==-1?fullClassName:fullClassName.substring(index+1);
+    }
 }

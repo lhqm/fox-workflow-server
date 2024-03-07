@@ -2,7 +2,9 @@ package com.activiti.z_six.service.manager;
 
 import com.activiti.z_six.dto.SendActionDto;
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
+import com.activiti.z_six.entity.process.ProcessEntity;
 import com.activiti.z_six.entity.taskAssignee.*;
+import com.activiti.z_six.entity.tenant.FlowProcess;
 import com.activiti.z_six.mapper.taskAssigneeMapper.*;
 import com.activiti.z_six.security.RedisUtils;
 import com.activiti.z_six.service.ISmsEntityService;
@@ -10,18 +12,27 @@ import com.activiti.z_six.templete.FindBpmModel;
 import com.activiti.z_six.templete.FindWork;
 import com.activiti.z_six.util.DateUtils;
 import com.activiti.z_six.util.SystemConfig;
+import com.activiti.z_six.util.flow.FlowElementUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.api.model.shared.model.VariableInstance;
 import org.activiti.api.process.model.ProcessInstance;
+import org.activiti.api.process.model.payloads.GetVariablesPayload;
 import org.activiti.api.process.runtime.ProcessRuntime;
 import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
 import org.activiti.api.task.runtime.TaskRuntime;
-import org.activiti.bpmn.model.FlowElement;
-import org.activiti.bpmn.model.UserTask;
+import org.activiti.bpmn.model.*;
+import org.activiti.bpmn.model.Process;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.apache.catalina.User;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +44,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -66,6 +78,10 @@ public class IProcessTaskServiceManager {
     private RedisUtils redisUtils;
     @Autowired
     private ISmsEntityService smsEntityService;
+    @Autowired
+    private RepositoryService repositoryService;
+    @Autowired
+    private RuntimeService runtimeService;
 
 
     /**
@@ -193,7 +209,11 @@ public class IProcessTaskServiceManager {
         OvTaskEntity task = ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId());
         ProcessInstance processInstance = processRuntime.processInstance(task.getProc_inst_id_());
 
-        Boolean isCanSend=false;
+        List<FlowProcess> definition = getFlowElementsByProcessDefinition(processInstance.getProcessDefinitionId());
+//        definition.forEach((k,v)-> System.out.println(k+":"+v));
+//        Map<String, String> userTaskByProcessDefinition = getUserTaskByProcessDefinition(processInstance.getProcessDefinitionId());
+
+        boolean isCanSend=false;
         //获取设置的流程参数
         HashMap<String, Object> VarHashMap=new HashMap<>();
         //节点提交之前事件
@@ -336,7 +356,7 @@ public class IProcessTaskServiceManager {
 
             //生成标题
             if(!SystemConfig.IsNullOrEmpty(titleModel)) {
-                Map<String, Object> map = (Map) JSONObject.parseObject(generWork.getData_json());
+                Map<String, Object> map = JSONObject.parseObject(generWork.getData_json());
                 map.put("proce_inst_id",proce_inst_id);
                 map.put("user_name",username);
                 for (Map.Entry entry : map.entrySet()) {
@@ -430,4 +450,27 @@ public class IProcessTaskServiceManager {
     public List<UserTask> getNextTaskInfo(FlowElement targetFlowElement, HashMap<String,Object> variables){
         return findBpmModel.getNextTasks(variables,targetFlowElement);
     }
+
+    /**
+     * 获取到对应流程定义ID的整体流程信息
+     * @param definitionId 流程定义信息ID
+     * @return 流程定义信息
+     */
+
+    public List<FlowProcess> getFlowElementsByProcessDefinition(String definitionId){
+//        获取到流程的模型实例
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(definitionId);
+//        在模型的流程表里选择第一个流程作为流程对象定义（一般也只有一个）
+        Process process = bpmnModel.getProcesses().get(0);
+//        返回数据，这里开始对流程信息进行解构，获取到所有用户任务。因为用户任务才能参与审核，审核才会唤醒流转，流转才会改变状态
+        Collection<FlowElement> flowElements = process.getFlowElements();
+//        获取到流程路径定义
+        List<FlowProcess> flowDefinitionMap = FlowElementUtil.getFlowDefinitionMap(flowElements);
+        for (FlowProcess flowProcess : flowDefinitionMap) {
+            System.out.println(JSONArray.toJSONString(flowProcess));
+        }
+        return flowDefinitionMap;
+    }
+
+
 }
