@@ -77,34 +77,30 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
     @Override
     public String sendFlowMsg(String toUsers, String sender, ProcessInstance processInstance
             , Task task, HistoricProcessInstance historicProcessInstance,Boolean endTask){
+        /**
+         * notice:
+         * 这一部分的代码写的有些不尽人意
+         * 在有限分支里，将是否是终结点任务列举出来，这是正确的。但是将单人和多人分开是不对的。
+         * 因为users字段里就算只有一个人，也可以封装成一个长度1的数组去解决，提升代码简洁性和可读性。
+         * @TODO: 优化这部分的代码，把分支合并一下。
+         */
         if(!endTask) {
-            if (!toUsers.contains(",")) {
+            // 检查接收者是否为单个用户
+            boolean isSingleUser = !toUsers.contains(",");
+            String[] recipients = isSingleUser ? new String[]{toUsers} : toUsers.split(",");
+            for (String recipient : recipients) {
                 SmsEntity smsEntity = new SmsEntity();
-                smsEntity.setProce_inst_id(task.getProcessInstanceId());
                 smsEntity.setId(UUID.randomUUID().toString());
+                smsEntity.setProce_inst_id(task.getProcessInstanceId());
                 smsEntity.setMsgCont("流程[" + processInstance.getName() + "][" + task.getName() + "]步骤已完成，目前需要您进行审核");
                 smsEntity.setSender(sender);
                 smsEntity.setState("0");
-                smsEntity.setToUser(toUsers);
+                smsEntity.setToUser(recipient);
                 smsEntity.setSmsType("流程审核");
                 smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
                 smsEntity.setTitle("您有一项流程待办需要审核");
+
                 smsEntityMapper.addSms(smsEntity);
-            } else {
-                String[] users = toUsers.split(",");
-                for (String user : users) {
-                    SmsEntity smsEntity = new SmsEntity();
-                    smsEntity.setProce_inst_id(task.getProcessInstanceId());
-                    smsEntity.setId(UUID.randomUUID().toString());
-                    smsEntity.setMsgCont("流程[" + processInstance.getName() + "][" + task.getName() + "]步骤已完成，目前需要您进行审核");
-                    smsEntity.setSender(sender);
-                    smsEntity.setState("0");
-                    smsEntity.setToUser(user);
-                    smsEntity.setSmsType("流程审核");
-                    smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
-                    smsEntity.setTitle("您有一项流程待办需要审核");
-                    smsEntityMapper.addSms(smsEntity);
-                }
             }
         }
         else{

@@ -2,7 +2,6 @@ package com.activiti.z_six.service.impl;
 
 import com.activiti.z_six.SecurityUtil;
 import com.activiti.z_six.dto.SendActionDto;
-import com.activiti.z_six.dto.controllerParams.CCParams;
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
 import com.activiti.z_six.dto.controllerParams.TaskManageParams;
 import com.activiti.z_six.dto.controllerParams.TaskParams;

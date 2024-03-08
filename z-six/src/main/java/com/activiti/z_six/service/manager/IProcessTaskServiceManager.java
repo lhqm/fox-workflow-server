@@ -209,9 +209,8 @@ public class IProcessTaskServiceManager {
         OvTaskEntity task = ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId());
         ProcessInstance processInstance = processRuntime.processInstance(task.getProc_inst_id_());
 
+//        这行代码可以用来调试流程元素获取方法是否有问题。只需要在调试模式下发起对应流程的申请就行了
         List<FlowProcess> definition = getFlowElementsByProcessDefinition(processInstance.getProcessDefinitionId());
-//        definition.forEach((k,v)-> System.out.println(k+":"+v));
-//        Map<String, String> userTaskByProcessDefinition = getUserTaskByProcessDefinition(processInstance.getProcessDefinitionId());
 
         boolean isCanSend=false;
         //获取设置的流程参数

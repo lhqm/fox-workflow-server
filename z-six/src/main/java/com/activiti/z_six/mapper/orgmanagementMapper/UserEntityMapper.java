@@ -144,4 +144,5 @@ public interface UserEntityMapper {
      */
     int deleteUser(UserEntity userEntity);
 
+    UserEntity getUserByUserId(String userId);
 }
