@@ -210,7 +210,7 @@ public class IProcessTaskServiceManager {
         ProcessInstance processInstance = processRuntime.processInstance(task.getProc_inst_id_());
 
 //        这行代码可以用来调试流程元素获取方法是否有问题。只需要在调试模式下发起对应流程的申请就行了
-        List<FlowProcess> definition = getFlowElementsByProcessDefinition(processInstance.getProcessDefinitionId());
+//        List<FlowProcess> definition = getFlowElementsByProcessDefinition(processInstance.getProcessDefinitionId());
 
         boolean isCanSend=false;
         //获取设置的流程参数

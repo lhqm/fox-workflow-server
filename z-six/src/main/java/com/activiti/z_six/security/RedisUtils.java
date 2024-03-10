@@ -152,6 +152,10 @@ public class RedisUtils {
         hash.put(key, hashKey, value);
         redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
     }
+    public void hmSet(String key, Object hashKey, Object value ) {
+        HashOperations<String, Object, Object> hash = redisTemplate.opsForHash();
+        hash.put(key, hashKey, value);
+    }
 
     /**
      * 哈希获取数据
