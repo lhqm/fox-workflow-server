@@ -1,0 +1,65 @@
+#配置服务端口号
+server:
+  port: 8082
+  servlet:
+    context-path: /
+#配置数据库连接
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  redis:
+    host: localhost
+    port: 6379
+#    password: hrk1314159
+  datasource:
+    username: root
+    password: hrk1314159
+    url: jdbc:mysql://localhost:1030/fox_workflow_server?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowMultiQueries=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+#    druid:
+#      validation-query: SELECT 1 FROM DUAL
+#      initial-size: 10
+#      min-idle: 10
+#      max-active: 200
+#      min-evictable-idle-time-millis: 180000
+#      test-on-borrow: false
+#      test-while-idle: true
+#      remove-abandoned: true
+#      remove-abandoned-timeout: 1800
+#      log-abandoned: true
+#      pool-prepared-statements: true
+#      max-open-prepared-statements: 100
+#      filters: stat,wall
+#      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+z6System:
+  grant_type: password
+  client_id: z-six
+  client_secret: 1
+#mybatis配置，设置去读mapper.xml的路径
+mybatis:
+  type-aliases-package: com.activiti.z_six
+  mapper-locations: classpath:mapping/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#activiti7相关配置
+spring.activiti.history-level: full
+spring.activiti.db-history-used: true
+# 自动部署验证设置:true-开启（默认）、false-关闭
+spring.activiti.check-process-definitions: false
+#日志相关的配置
+#logging:
+#  level:
+##    root: debug
+#    com.mybatis: debug
+#    org.apache.ibatis: debug
+#    com.activiti.z_six: debug
+sftp:
+  prefix:  http://localhost:5015
+  sftpUrl: localhost
+  sftpPort: 2022
+  sftpUsername: sftp
+  sftpPassword: sftp@123
+  sftpBasePath: /
+  sftpImagePath: ent/production/img
+  sftpFilePath: ent/production/platform
