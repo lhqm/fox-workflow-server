@@ -30,7 +30,7 @@ public class SendFlowStatusServiceImpl implements SendFlowStatusService {
     @Override
     public List<FlowMessage> getFlowMessage(Boolean autoMode, String tenant) {
 //        获取到所有数据
-        Object allData = redisUtils.get(STATUS_DRIVER_CONTEXT + tenant);
+        Object allData = redisUtils.get(STATUS_DRIVER_CONTEXT + (tenant==null?DEFAULT_TENANT:tenant));
 //        转为map
         Map<String, String> map = (Map<String, String>) allData;
 //        开始循环获取数据
@@ -44,19 +44,14 @@ public class SendFlowStatusServiceImpl implements SendFlowStatusService {
     }
 
     @Override
-    public Integer receiveFlowMessageList(List<String> askList, String tenant) {
-        Object allData = redisUtils.get(STATUS_DRIVER_CONTEXT + tenant);
-        //        转为map
-        Map<String, String> map = (Map<String, String>) allData;
-        for (String ask : askList) {
-            map.remove(ask);
-        }
-
-        return null;
+    public Long receiveFlowMessageList(List<String> askList, String tenant) {
+        //        如果租户为空，则设置租户为主租户
+        if (tenant==null) tenant=DEFAULT_TENANT;
+        return redisUtils.delCacheMapValue(STATUS_DRIVER_CONTEXT+tenant,askList);
     }
 
     @Override
-    public Integer receiveFlowMessage(String askCode, String tenant) {
+    public Long receiveFlowMessage(String askCode, String tenant) {
         return receiveFlowMessageList(Collections.singletonList(askCode),tenant);
     }
 }

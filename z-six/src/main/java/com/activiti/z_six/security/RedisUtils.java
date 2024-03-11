@@ -329,4 +329,16 @@ public class RedisUtils {
         return ret;
     }
 
+
+    /**
+     * 删除Hash中的数据
+     *
+     * @param key /
+     * @param hkey /
+     */
+    public long delCacheMapValue(final String key, final List<String> hkey)
+    {
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        return hashOperations.delete(key, hkey.toArray(new String[0]));
+    }
 }

@@ -27,7 +27,7 @@ public interface SendFlowStatusService {
      * @param askList 确认列表
      * @return 确认数
      */
-    Integer receiveFlowMessageList(List<String> askList,String tenant);
+    Long receiveFlowMessageList(List<String> askList,String tenant);
 
-    Integer receiveFlowMessage(String askCode,String tenant);
+    Long receiveFlowMessage(String askCode,String tenant);
 }
