@@ -1,7 +1,10 @@
 package com.activiti.z_six.service;
 
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
+import com.activiti.z_six.entity.taskAssignee.OvTaskEntity;
 import com.activiti.z_six.entity.taskAssignee.SmsEntity;
+import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.task.model.Task;
 import org.activiti.engine.history.HistoricProcessInstance;
@@ -36,16 +39,21 @@ public interface ISmsEntityService {
 
     /**
      * 发送流程审核消息
+     *
      * @param toUsers
      * @param sender
      * @param processInstance
+     * @param processTaskParams
+     * @param ovTaskEntity
      * @param task
      * @param historicProcessInstance
      * @param endTask
      * @return
      */
     String sendFlowMsg(String toUsers, String sender, ProcessInstance processInstance,
-                              Task task, HistoricProcessInstance historicProcessInstance, Boolean endTask);
+                       ProcessTaskParams processTaskParams, OvTaskEntity ovTaskEntity, Task task, HistoricProcessInstance historicProcessInstance, Boolean endTask);
+
+    void storeTenantStatusMessage(StatusEnum statusEnum, FlowMessage flowMessage, String tenant);
 
     /**
      * 发送抄送消息

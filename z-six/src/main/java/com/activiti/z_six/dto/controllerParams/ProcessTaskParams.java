@@ -56,6 +56,8 @@ public class ProcessTaskParams {
      */
     private List<CCData> ccData;
 
+    private String tenantId;
+
     @Data
     public static class CCData{
         /**

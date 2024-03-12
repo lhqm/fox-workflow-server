@@ -2,10 +2,15 @@ package com.activiti.z_six.service.impl;
 
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
 import com.activiti.z_six.entity.taskAssignee.GenerWork;
+import com.activiti.z_six.entity.taskAssignee.OvTaskEntity;
 import com.activiti.z_six.entity.taskAssignee.SmsEntity;
 import com.activiti.z_six.mapper.taskAssigneeMapper.GenerWorkMapper;
+import com.activiti.z_six.mapper.taskAssigneeMapper.OvTaskEntityMapper;
 import com.activiti.z_six.mapper.taskAssigneeMapper.SmsEntityMapper;
 import com.activiti.z_six.service.ISmsEntityService;
+import com.activiti.z_six.tenant.WorkFlowMessageContext;
+import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.SecurityUtils;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.task.model.Task;
@@ -22,6 +27,10 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
     private SmsEntityMapper smsEntityMapper;
     @Autowired
     private GenerWorkMapper generWorkMapper;
+    @Autowired
+    private WorkFlowMessageContext workFlowMessageContext;
+    @Autowired
+    private OvTaskEntityMapper ovTaskEntityMapper;
 
     /**
      * 获取流程通知列表
@@ -66,9 +75,12 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
 
     /**
      * 发送流程审核消息
+     *
      * @param toUsers
      * @param sender
      * @param processInstance
+     * @param processTaskParams
+     * @param ovTaskEntity
      * @param task
      * @param historicProcessInstance
      * @param endTask
@@ -76,14 +88,28 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
      */
     @Override
     public String sendFlowMsg(String toUsers, String sender, ProcessInstance processInstance
-            , Task task, HistoricProcessInstance historicProcessInstance,Boolean endTask){
+            , ProcessTaskParams processTaskParams, OvTaskEntity ovTaskEntity, Task task, HistoricProcessInstance historicProcessInstance, Boolean endTask){
         /**
          * notice:
          * 这一部分的代码写的有些不尽人意
          * 在有限分支里，将是否是终结点任务列举出来，这是正确的。但是将单人和多人分开是不对的。
          * 因为users字段里就算只有一个人，也可以封装成一个长度1的数组去解决，提升代码简洁性和可读性。
          * @TODO: 优化这部分的代码，把分支合并一下。
+         *
+         *
+         * @release: 新增租户端推送支持。
          */
+        FlowMessage flowMessage = FlowMessage
+                .builder()
+//                设置实例ID
+                .processInstanceId(processInstance.getId())
+//                设置签发时间
+                .processTime(task.getCompletedDate()==null? task.getClaimedDate().getTime() : task.getCompletedDate().getTime())
+//                设置任务ID，表明进行到哪一步了
+                .sourceTaskId(ovTaskEntity.getTask_def_key_())
+//                设置处理信息
+                .processMessage(processTaskParams.getMsg())
+                .build();
         if(!endTask) {
             // 检查接收者是否为单个用户
             boolean isSingleUser = !toUsers.contains(",");
@@ -101,6 +127,11 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
                 smsEntity.setTitle("您有一项流程待办需要审核");
 
                 smsEntityMapper.addSms(smsEntity);
+//                向租户端发送成功消息
+                flowMessage.setStatusChangeId(StatusEnum.RUNNING.getStatusCode());
+                flowMessage.setStatusChangeText(StatusEnum.RUNNING.getStatusName());
+                flowMessage.setEnd(false);
+                workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntity.getTenant_id_());
             }
         }
         else{
@@ -115,8 +146,21 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
             smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
             smsEntity.setTitle("审核结果通知");
             smsEntityMapper.addSms(smsEntity);
+            //                向租户端发送结转消息
+            flowMessage.setStatusChangeId(StatusEnum.FINISH.getStatusCode());
+            flowMessage.setStatusChangeText(StatusEnum.FINISH.getStatusName());
+            flowMessage.setEnd(true);
+            workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntity.getTenant_id_());
         }
         return "发送成功";
+    }
+
+    @Override
+    public void storeTenantStatusMessage(StatusEnum statusEnum, FlowMessage flowMessage, String tenant) {
+        //                向租户端发送结转消息
+        flowMessage.setStatusChangeId(statusEnum.getStatusCode());
+        flowMessage.setStatusChangeText(statusEnum.getStatusName());
+        workFlowMessageContext.StorageMessageByTenant(flowMessage,tenant);
     }
 
     /**

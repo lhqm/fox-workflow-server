@@ -2,7 +2,6 @@ package com.activiti.z_six.service.manager;
 
 import com.activiti.z_six.dto.SendActionDto;
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
-import com.activiti.z_six.entity.process.ProcessEntity;
 import com.activiti.z_six.entity.taskAssignee.*;
 import com.activiti.z_six.entity.tenant.FlowProcess;
 import com.activiti.z_six.mapper.taskAssigneeMapper.*;
@@ -10,17 +9,16 @@ import com.activiti.z_six.security.RedisUtils;
 import com.activiti.z_six.service.ISmsEntityService;
 import com.activiti.z_six.templete.FindBpmModel;
 import com.activiti.z_six.templete.FindWork;
+import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.DateUtils;
 import com.activiti.z_six.util.SystemConfig;
 import com.activiti.z_six.util.flow.FlowElementUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.api.model.shared.model.VariableInstance;
 import org.activiti.api.process.model.ProcessInstance;
-import org.activiti.api.process.model.payloads.GetVariablesPayload;
 import org.activiti.api.process.runtime.ProcessRuntime;
 import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
@@ -29,10 +27,7 @@ import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.apache.catalina.User;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +39,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -80,8 +74,6 @@ public class IProcessTaskServiceManager {
     private ISmsEntityService smsEntityService;
     @Autowired
     private RepositoryService repositoryService;
-    @Autowired
-    private RuntimeService runtimeService;
 
 
     /**
@@ -114,6 +106,10 @@ public class IProcessTaskServiceManager {
             processTaskParams.setProcessInstanceId(processInstanceId);
             processTaskParams.setMsg(Msg);
             this.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,3,"移交");
+
+//            发送消息给租户端
+            sendMessageToTenant(processInstanceId,Msg,task,StatusEnum.TRANSFER,false);
+
             return ovTaskEntity;
         }catch (Exception ex){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -145,6 +141,9 @@ public class IProcessTaskServiceManager {
             processTaskParams.setProcessInstanceId(processInstanceId);
             processTaskParams.setMsg(Msg);
             this.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,6,"手动结束");
+
+            //            发送消息给租户端
+            sendMessageToTenant(processInstanceId,Msg,ovTaskEntity,StatusEnum.INTERRUPT,true);
         }
         catch (Exception ex){
             ovTaskEntityMapper.setTaskStatus(ovTaskEntity);
@@ -261,7 +260,8 @@ public class IProcessTaskServiceManager {
             }
             this.setTitle(task.getProc_inst_id_(),processTaskParams.getBusinessKey(),task.getTask_def_key_());
             //获取下一步任务处理人
-            HashMap<String, Object> hashMap = findWork.getNextUserInfo(task.getProc_inst_id_(), task.getId_(), processTaskParams.getVariables());
+            HashMap<String, Object> variables = processTaskParams.getVariables();
+            HashMap<String, Object> hashMap = findWork.getNextUserInfo(task.getProc_inst_id_(), task.getId_(), variables);
             //判断是否是手动选择人员发送
             try {
                 if (!SystemConfig.IsNullOrEmpty(hashMap.get("byManuallySelect").toString())) {
@@ -288,12 +288,31 @@ public class IProcessTaskServiceManager {
             }//无需关注异常，说明不是手动选择发送
             catch (Exception ex){}
 
+
             //执行发送
             Task taskObj = taskRuntime.complete(TaskPayloadBuilder.complete()
                     .withTaskId(task.getId_())
                     .withVariables(hashMap)
                     .build());
-
+//            如果是手动选择路径流转，那么应该设置好流转路径的通知
+            if (variables!=null && variables.containsKey("expType") && variables.get("expType").equals("ExclusiveGateway")){
+                String nextNode = variables.get("nextNode").toString();
+                UserTask userTask = getUserTaskByTaskId(processTaskParams.getProcessInstanceId(), nextNode);
+                FlowMessage flowMessage = FlowMessage.builder()
+                        .processMessage("用户手动选择流程路径:" + userTask.getName())
+                        .sourceTaskId(sendActionDto.getCurTask_key())
+                        .processTime(taskObj.getCompletedDate().getTime())
+                        .targetTaskId(userTask.getId())
+                        .processInstanceId(taskObj.getProcessInstanceId())
+                        .isEnd(false)
+                        .build();
+                smsEntityService.storeTenantStatusMessage(StatusEnum.HUMAN_MODEL_SELECTION,flowMessage,task.getTenant_id_());
+            }
+//            其他情况下的数据
+//            如果是用户手动发送，那么送达时序应该是：
+//            1.用户手动选择的消息报送
+//            2.用户签发情况的消息到达
+//            如果用户在手动选择的节点进行了拒签，那么送过来的应该是拒签数据，不再存在上述的消息报送和消息到达数据
             //增加审核记录
             this.setApprovalTrack(task.getTask_def_key_(),task.getName_(),processTaskParams,1,"审核");
             //下一步的接收人
@@ -303,7 +322,7 @@ public class IProcessTaskServiceManager {
 
             if(!SystemConfig.IsNullOrEmpty(msgToUsers)) {
                 //发送消息
-                smsEntityService.sendFlowMsg(msgToUsers,username,processInstance,
+                smsEntityService.sendFlowMsg(msgToUsers,username,processInstance,processTaskParams,task,
                         taskObj,null,false);
             }
             else{
@@ -315,11 +334,13 @@ public class IProcessTaskServiceManager {
                                 .processInstanceId(taskObj.getProcessInstanceId())
                                 .singleResult();
                         //发送消息
-                        smsEntityService.sendFlowMsg(msgToUsers, username, processInstance,
+                        smsEntityService.sendFlowMsg(msgToUsers, username, processInstance,processTaskParams,task,
                                 taskObj, historicProcessInstance, true);
                     }
                 }
-                catch (Exception ex){}
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
             }
         }
         return sendActionDto;
@@ -471,5 +492,58 @@ public class IProcessTaskServiceManager {
         return flowDefinitionMap;
     }
 
+    /**
+     * 通过流程实例ID去获取流程定义
+     * @param instanceId 流程实例ID
+     * @return 流程定义信息
+     */
 
+    public List<FlowProcess> getFlowElementsByProcessInstance(String instanceId){
+        ProcessInstance processInstance = processRuntime.processInstance(instanceId);
+        return getFlowElementsByProcessDefinition(processInstance.getProcessDefinitionId());
+    }
+
+    /**
+     * 根据流程实例ID和用户任务节点ID获取到详细的用户节点任务信息
+     * @param processInstanceId 流程实例ID
+     * @param taskId 流程节点ID
+     * @return 用户任务的详细信息
+     */
+
+    public UserTask getUserTaskByTaskId(String processInstanceId,String taskId){
+//        获取到流程的模型实例
+        ProcessInstance processInstance = processRuntime.processInstance(processInstanceId);
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processInstance.getProcessDefinitionId());
+//        筛选到流程路径定义，取到想要的UserTask数据
+        Process process = bpmnModel.getProcesses().get(0);
+        Collection<FlowElement> flowElements = process.getFlowElements();
+        for (FlowElement element : flowElements) {
+            if (element instanceof UserTask && taskId.equals(element.getId())){
+                return (UserTask) element;
+            }
+        }
+        return new UserTask();
+    }
+
+    /**
+     * 为其他状态转移特意封装的通知消息类型。该方法用于快速从只具有参数列表内条件的状态迁移方法，固定迁移到指定的节点。
+     * @param processInstanceId 流程实例ID
+     * @param Msg 审批消息
+     * @param task 任务节点ID
+     * @param statusEnum 状态列举类型
+     * @param endTask 是否结束
+     */
+    public void sendMessageToTenant(String processInstanceId,String Msg,OvTaskEntity task,StatusEnum statusEnum,boolean endTask){
+        //            构造租户端移交消息
+        FlowMessage flowMessage = FlowMessage.builder()
+                .processInstanceId(processInstanceId)
+                .processMessage(Msg)
+                .processTime(System.currentTimeMillis())
+                .targetTaskId(task.getTask_def_key_())
+                .sourceTaskId(task.getTask_def_key_())
+                .isEnd(endTask)
+                .build();
+//            移交到租户端
+        smsEntityService.storeTenantStatusMessage(statusEnum,flowMessage,task.getTenant_id_());
+    }
 }

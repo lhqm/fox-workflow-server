@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * 租户端流程状态迁移通知
  */
-public interface SendFlowStatusService {
+public interface WorkFlowMessageContext {
     /**
      * 状态通知存库
      * @param flowMessage 通知数据
@@ -29,5 +29,11 @@ public interface SendFlowStatusService {
      */
     Long receiveFlowMessageList(List<String> askList,String tenant);
 
+    /**
+     * 响应并删除相关存库数据
+     * @param askCode 确认列表
+     * @return 确认数
+     */
     Long receiveFlowMessage(String askCode,String tenant);
+
 }

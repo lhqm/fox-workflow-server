@@ -7,11 +7,14 @@ import com.activiti.z_six.dto.controllerParams.TaskManageParams;
 import com.activiti.z_six.dto.controllerParams.TaskParams;
 import com.activiti.z_six.entity.orgmanagement.UserEntity;
 import com.activiti.z_six.entity.taskAssignee.*;
+import com.activiti.z_six.entity.tenant.FlowProcess;
 import com.activiti.z_six.mapper.orgmanagementMapper.UserEntityMapper;
 import com.activiti.z_six.mapper.taskAssigneeMapper.*;
 import com.activiti.z_six.service.IProcessTaskService;
-import com.activiti.z_six.service.manager.IProcessTaskServiceManager;
 import com.activiti.z_six.templete.FindWork;
+import com.activiti.z_six.tenant.WorkFlowMessageContext;
+import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.SystemConfig;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.process.model.builders.ProcessPayloadBuilder;
@@ -31,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.activiti.z_six.service.manager.IProcessTaskServiceManager;
 
 import java.util.*;
 
@@ -70,6 +74,8 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
     private IProcessTaskServiceManager processTaskServiceManager;
     @Autowired
     private FindWork findWork;
+    @Autowired
+    private WorkFlowMessageContext workFlowMessageContext;
 
     /**
      * 获取任务表单内容
@@ -157,6 +163,26 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                 .withBusinessKey(BusinessKey)
                 .build());
 
+//        推送流程启动的消息
+        List<FlowElement> flowElements = (List<FlowElement>) process.getFlowElements();
+
+        FlowMessage flowMessage = FlowMessage.builder()
+                .processInstanceId(processInstance.getId())
+//                将用户启动动作当做用户审批消息发出
+                .processMessage("用户["+username+"]发起流程")
+//                截取当前时间作为启动标注
+                .processTime(System.currentTimeMillis())
+                .isEnd(false)
+//                下一个节点的ID
+                .targetTaskId(userTask.getId())
+//                源ID设为流程的启动节点ID
+                .sourceTaskId(flowElements.get(0).getId())
+//                设置启动状态
+                .statusChangeId(StatusEnum.STARTING.getStatusCode())
+                .statusChangeText(StatusEnum.STARTING.getStatusName())
+                .build();
+//        发送到Redis的消息队列
+        workFlowMessageContext.StorageMessageByTenant(flowMessage, processTaskParams.getTenantId());
         //获取任务信息
         org.activiti.engine.task.Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstance.getId())
@@ -255,6 +281,26 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             processTaskParams.setMsg(returnWork.getReturn_msg());
             processTaskServiceManager.setApprovalTrack(task_def_key,task_def_name,processTaskParams,2,"驳回");
 
+            //记录日志
+            //        推送流程被拒绝的消息
+            FlowMessage flowMessage = FlowMessage.builder()
+                    .processInstanceId(returnWork.getProc_inst_id())
+//                将驳回消息封装送回
+                    .processMessage(returnWork.getReturn_msg())
+//                截取当前时间作为启动标注
+                    .processTime(System.currentTimeMillis())
+                    .isEnd(false)
+//                下一个节点的ID
+                    .targetTaskId(returnWayEntity.getTask_def_id())
+//                源ID设为流程的启动节点ID
+                    .sourceTaskId(returnWork.getTaskid())
+//                设置拒绝的状态
+                    .statusChangeId(StatusEnum.REFUSE.getStatusCode())
+                    .statusChangeText(StatusEnum.REFUSE.getStatusCode())
+                    .build();
+//        发送到Redis的消息队列
+            workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId()).getTenant_id_());
+
             return ovTaskEntity;
         }
         catch (Exception ex){
@@ -352,6 +398,25 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             processTaskParams.setProcessInstanceId(params.getProc_inst_id());
             processTaskParams.setMsg(params.getMsg());
             processTaskServiceManager.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,5,"不同意");
+
+            //        推送流程驳回的消息
+            FlowMessage flowMessage = FlowMessage.builder()
+                    .processInstanceId(params.getProc_inst_id())
+//                将用户启动动作当做用户审批消息发出
+                    .processMessage(params.getMsg())
+//                截取当前时间作为启动标注
+                    .processTime(System.currentTimeMillis())
+//                    .isEnd(false)
+//                下一个节点的ID
+                    .targetTaskId(null)
+//                源ID设为流程的启动节点ID
+                    .sourceTaskId(ovTaskEntity.getTask_def_key_())
+//                设置启动状态
+                    .statusChangeId(StatusEnum.STARTING.getStatusCode())
+                    .statusChangeText(StatusEnum.STARTING.getStatusCode())
+                    .build();
+//        发送到Redis的消息队列
+            workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId()).getTenant_id_());
         }
         catch (Exception ex){
             ovTaskEntityMapper.setTaskStatus(ovTaskEntity);

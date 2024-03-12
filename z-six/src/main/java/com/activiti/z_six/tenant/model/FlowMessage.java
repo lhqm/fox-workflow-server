@@ -22,6 +22,8 @@ public class FlowMessage {
     private String sourceTaskId;
 //    目标流转节点
     private String targetTaskId;
+//    流程是否已经结束
+    private boolean isEnd;
 //    审批时间
     private long processTime;
 //    生成式随机确认码
