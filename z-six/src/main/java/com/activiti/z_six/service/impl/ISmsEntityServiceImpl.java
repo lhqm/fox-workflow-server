@@ -104,7 +104,10 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
 //                设置实例ID
                 .processInstanceId(processInstance.getId())
 //                设置签发时间
-                .processTime(task.getCompletedDate()==null? task.getClaimedDate().getTime() : task.getCompletedDate().getTime())
+                .processTime(
+                        task.getCompletedDate()==null?
+                                (task.getClaimedDate()==null?System.currentTimeMillis():task.getClaimedDate().getTime())
+                                : task.getCompletedDate().getTime())
 //                设置任务ID，表明进行到哪一步了
                 .sourceTaskId(ovTaskEntity.getTask_def_key_())
 //                设置处理信息
@@ -127,12 +130,12 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
                 smsEntity.setTitle("您有一项流程待办需要审核");
 
                 smsEntityMapper.addSms(smsEntity);
-//                向租户端发送成功消息
-                flowMessage.setStatusChangeId(StatusEnum.RUNNING.getStatusCode());
-                flowMessage.setStatusChangeText(StatusEnum.RUNNING.getStatusName());
-                flowMessage.setEnd(false);
-                workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntity.getTenant_id_());
             }
+            //                向租户端发送成功消息
+            flowMessage.setStatusChangeId(StatusEnum.RUNNING.getStatusCode());
+            flowMessage.setStatusChangeText(StatusEnum.RUNNING.getStatusName());
+            flowMessage.setEnd(false);
+            workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntity.getTenant_id_());
         }
         else{
             SmsEntity smsEntity = new SmsEntity();

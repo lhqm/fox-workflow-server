@@ -41,11 +41,11 @@ export function getHisFormJson(procKey, taskid) {
 
 // 启动/发起/提交流程
 export function startProcess(procKey, procName, businessKey) {
-  const data={
-    processKey:procKey,
-    processName:procName,
-    businessKey:businessKey
-  }
+  const data = {
+    processKey: procKey,
+    processName: procName,
+    businessKey: businessKey
+  };
   return request({
     url: '/api/task/startProcess',
     method: 'post',
@@ -62,12 +62,12 @@ export function sendWork(approval) {
   });
 }
 // 驳回
-export function returnWork(processInstanceId, taskid, returnToTaskKey, returnWay, returnMsg) {
+export function returnWork(processInstanceId, taskid, returnToTaskKey, returnMsg) {
   const data = {
-    proc_inst_id:processInstanceId,
-    taskid:taskid,
-    returnTo_act_id:returnToTaskKey,
-    return_msg:returnMsg
+    proc_inst_id: processInstanceId,
+    taskid: taskid,
+    returnTo_act_id: returnToTaskKey,
+    return_msg: returnMsg
   };
   return request({
     url: '/api/task/returnWork',
@@ -78,10 +78,10 @@ export function returnWork(processInstanceId, taskid, returnToTaskKey, returnWay
 // 移交
 export function transfer(processInstanceId, taskid, msg, toUser) {
   const data = {
-    proc_inst_id:processInstanceId,
-    taskid:taskid,
-    msg:msg,
-    toUser:toUser
+    proc_inst_id: processInstanceId,
+    taskid: taskid,
+    msg: msg,
+    toUser: toUser
   };
   return request({
     url: '/api/task/transfer',
@@ -89,12 +89,12 @@ export function transfer(processInstanceId, taskid, msg, toUser) {
     data: data
   });
 }
-//批量移交
-export function transferBatch(msg, toUser,selectData) {
+// 批量移交
+export function transferBatch(msg, toUser, selectData) {
   const data = {
-    toUser:toUser,
-    taskParams:selectData,
-    msg:msg
+    toUser: toUser,
+    taskParams: selectData,
+    msg: msg
   };
   return request({
     url: '/api/task/transferBatch',
@@ -105,10 +105,10 @@ export function transferBatch(msg, toUser,selectData) {
 // 加签
 export function countersign(processInstanceId, taskid, msg, toUser) {
   const data = {
-    proc_inst_id:processInstanceId,
-    taskid:taskid,
-    msg:msg,
-    toUser:toUser
+    proc_inst_id: processInstanceId,
+    taskid: taskid,
+    msg: msg,
+    toUser: toUser
   };
   return request({
     url: '/api/task/countersign',
@@ -119,9 +119,9 @@ export function countersign(processInstanceId, taskid, msg, toUser) {
 // 拒绝
 export function refuse(processInstanceId, taskid, msg) {
   const data = {
-    proc_inst_id:processInstanceId,
-    taskid:taskid,
-    msg:msg
+    proc_inst_id: processInstanceId,
+    taskid: taskid,
+    msg: msg
   };
   return request({
     url: '/api/task/refuse',
@@ -132,9 +132,9 @@ export function refuse(processInstanceId, taskid, msg) {
 // 手动结束
 export function setEndTask(processInstanceId, taskid, msg) {
   const data = {
-    proc_inst_id:processInstanceId,
-    taskid:taskid,
-    msg:msg
+    proc_inst_id: processInstanceId,
+    taskid: taskid,
+    msg: msg
   };
   return request({
     url: '/api/task/setEndTask',
@@ -142,11 +142,11 @@ export function setEndTask(processInstanceId, taskid, msg) {
     data: data
   });
 }
-//批量结束
+// 批量结束
 export function setEndTaskBatch(selectData, msg) {
   const data = {
-    taskParams:selectData,
-    msg:msg
+    taskParams: selectData,
+    msg: msg
   };
   return request({
     url: '/api/task/setEndTaskBatch',
@@ -157,9 +157,9 @@ export function setEndTaskBatch(selectData, msg) {
 // 删除流程实例
 export function deleteProcInst(processInstanceId, taskid, msg) {
   const data = {
-    proc_inst_id:processInstanceId,
-    taskid:taskid,
-    msg:msg
+    proc_inst_id: processInstanceId,
+    taskid: taskid,
+    msg: msg
   };
   return request({
     url: '/api/task/deleteProcInst',
@@ -167,4 +167,3 @@ export function deleteProcInst(processInstanceId, taskid, msg) {
     data: data
   });
 }
-

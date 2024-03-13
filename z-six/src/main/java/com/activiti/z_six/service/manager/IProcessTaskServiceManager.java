@@ -258,6 +258,16 @@ public class IProcessTaskServiceManager {
             if (task.getAssignee_() == null) {
                 taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task.getId_()).build());
             }
+            /*
+            可能存在：节点被用户手动选择路径。所以说这里需要先取出来备份
+            该节点名字为nextNode
+            进入下方findWork.getNextUserInfo()方法后，该值会由task_def_id变为用户选择列表
+             */
+            String nextNode=null;
+//            存在即赋值。如果没有赋值成功就代表根本不是手动选择，不会进相关流程
+            if (processTaskParams.getVariables()!=null && processTaskParams.getVariables().containsKey("nextNode")){
+                nextNode=processTaskParams.getVariables().get("nextNode").toString();
+            }
             this.setTitle(task.getProc_inst_id_(),processTaskParams.getBusinessKey(),task.getTask_def_key_());
             //获取下一步任务处理人
             HashMap<String, Object> variables = processTaskParams.getVariables();
@@ -296,12 +306,11 @@ public class IProcessTaskServiceManager {
                     .build());
 //            如果是手动选择路径流转，那么应该设置好流转路径的通知
             if (variables!=null && variables.containsKey("expType") && variables.get("expType").equals("ExclusiveGateway")){
-                String nextNode = variables.get("nextNode").toString();
                 UserTask userTask = getUserTaskByTaskId(processTaskParams.getProcessInstanceId(), nextNode);
                 FlowMessage flowMessage = FlowMessage.builder()
                         .processMessage("用户手动选择流程路径:" + userTask.getName())
                         .sourceTaskId(sendActionDto.getCurTask_key())
-                        .processTime(taskObj.getCompletedDate().getTime())
+                        .processTime(System.currentTimeMillis())
                         .targetTaskId(userTask.getId())
                         .processInstanceId(taskObj.getProcessInstanceId())
                         .isEnd(false)

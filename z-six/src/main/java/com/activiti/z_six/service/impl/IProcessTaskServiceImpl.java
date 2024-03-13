@@ -367,6 +367,26 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             processTaskParams.setProcessInstanceId(params.getProc_inst_id());
             processTaskParams.setMsg(params.getMsg());
             processTaskServiceManager.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,4,"加签");
+
+            //记录日志
+            //        推送流程加签的消息
+            FlowMessage flowMessage = FlowMessage.builder()
+                    .processInstanceId(params.getProc_inst_id())
+//                将加签消息封装送回
+                    .processMessage(params.getMsg())
+//                截取当前时间作为加签节点标注
+                    .processTime(System.currentTimeMillis())
+                    .isEnd(false)
+//                下一个节点的ID，加签属于原地打转，直接上本流程ID就行
+                    .targetTaskId(ovTaskEntity.getTask_def_key_())
+//                源ID设为流程的当前节点ID，加签后，流程依旧卡在这个节点上
+                    .sourceTaskId(ovTaskEntity.getTask_def_key_())
+//                设置加签的状态
+                    .statusChangeId(StatusEnum.COUNTERSIGN.getStatusCode())
+                    .statusChangeText(StatusEnum.COUNTERSIGN.getStatusCode())
+                    .build();
+//        发送到Redis的消息队列
+            workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId()).getTenant_id_());
             return ovTaskEntity;
         }catch (Exception ex){
             return new OvTaskEntity();
