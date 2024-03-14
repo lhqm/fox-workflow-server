@@ -1,11 +1,11 @@
 package com.activiti.z_six.service.impl;
 
+import com.activiti.z_six.SecurityUtil;
 import com.activiti.z_six.dto.controllerParams.*;
 import com.activiti.z_six.entity.process.FlowEntity;
 import com.activiti.z_six.entity.process.FlowSort;
 
 import com.activiti.z_six.entity.taskAssignee.FlowElementAttrs;
-import com.activiti.z_six.entity.process.FlowEnum;
 import com.activiti.z_six.entity.taskAssignee.OvProcessInstance;
 import com.activiti.z_six.mapper.processMapper.FlowEntityMapper;
 import com.activiti.z_six.mapper.processMapper.FlowSortMapper;
@@ -101,13 +101,17 @@ public class IProcessDefinitionServiceImpl implements IProcessDefinitionService 
     }
     /**
      * 发布流程
+     *
      * @param BPMNXml
+     * @param tenantId
      * @return
      */
     @Override
-    public String deployWithBPMNJS(String BPMNXml){
+    public String deployWithBPMNJS(String BPMNXml, String tenantId){
         Deployment deployment = repositoryService.createDeployment()
                 .addString("createWithBPMNJS.bpmn",BPMNXml)
+//                定义租户ID
+                .tenantId((tenantId==null || tenantId.equals(""))?"main":tenantId)
                 .deploy();
 
         iProcessDefinitionManager.createTask(deployment.getId());

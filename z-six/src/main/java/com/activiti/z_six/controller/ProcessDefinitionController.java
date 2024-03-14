@@ -99,10 +99,10 @@ public class ProcessDefinitionController {
      */
     @OperLog(operModul = "流程定义相关" , operType = LogConst.INSERT , operDesc = "流程发布")
     @PostMapping(value = "/deployment/deployWithBPMNJS")
-    public ResultRes deployWithBPMNJS(@RequestBody JSONObject param){
+    public ResultRes deployWithBPMNJS(@RequestBody JSONObject param,String tenantId){
         String stringBPMNXml=param.get("stringBPMNXml").toString();
         try {
-            return ResultRes.success(processDefinitionService.deployWithBPMNJS(stringBPMNXml));
+            return ResultRes.success(processDefinitionService.deployWithBPMNJS(stringBPMNXml,tenantId));
         }
         catch (Exception ex){
             return ResultRes.error(ex.getMessage());

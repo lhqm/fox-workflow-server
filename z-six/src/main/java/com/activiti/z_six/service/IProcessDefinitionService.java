@@ -3,7 +3,6 @@ package com.activiti.z_six.service;
 import com.activiti.z_six.dto.controllerParams.ProcessDefinitionParams;
 import com.activiti.z_six.dto.controllerParams.TaskDefinitionParams;
 import com.activiti.z_six.entity.process.FlowSort;
-import com.activiti.z_six.entity.taskAssignee.FlowElementAttrs;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +19,12 @@ public interface IProcessDefinitionService {
     HashMap<String ,Object> getDeployment(Integer page, Integer pagesize, String sortid, String name);
     /**
      * 发布流程
+     *
      * @param BPMNXml
+     * @param tenantId
      * @return
      */
-    String deployWithBPMNJS(String BPMNXml);
+    String deployWithBPMNJS(String BPMNXml, String tenantId);
 
     /**
      * 流程属性
