@@ -41,7 +41,8 @@ public class EndEventStrategy implements SequenceFlowStrategy{
             if(redisUtils.exists(procInstId+"_end")){
                 redisUtils.remove(procInstId+"_end");
             }
-            redisUtils.set(procInstId+"_sms","流程已结束。");
+//            这段代码在前置修改后会报空指针。正确做法应该是通过流程实例查到发起人，然后把发起人塞到这个_end里边
+            redisUtils.set(procInstId+"_sms","流程已结束");
             return variables;
         }
     }

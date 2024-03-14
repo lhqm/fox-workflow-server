@@ -10,6 +10,7 @@ import com.activiti.z_six.service.ISmsEntityService;
 import com.activiti.z_six.templete.FindBpmModel;
 import com.activiti.z_six.templete.FindWork;
 import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.model.TransMsgExtension;
 import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.DateUtils;
 import com.activiti.z_six.util.SystemConfig;
@@ -88,13 +89,14 @@ public class IProcessTaskServiceManager {
                                  String toUser){
         try{
             OvTaskEntity task=ovTaskEntityMapper.ovTaskEntity(taskId);
-            if(task.getAssignee_()==null){
+            String assignee = task.getAssignee_();
+            if(assignee ==null){
                 taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(taskId).build());
             }
 
             OvTaskEntity ovTaskEntity = task;
             ovTaskEntity.setAssignee_(toUser);
-            ovTaskEntity.setClaim_time_(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+            ovTaskEntity.setClaim_time_(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
             //更新执行人
             ovTaskEntityMapper.setTaskStatus(ovTaskEntity);
 
@@ -108,7 +110,9 @@ public class IProcessTaskServiceManager {
             this.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,3,"移交");
 
 //            发送消息给租户端
-            sendMessageToTenant(processInstanceId,Msg,task,StatusEnum.TRANSFER,false);
+            sendMessageToTenant(processInstanceId,
+                    new TransMsgExtension(assignee,toUser,Msg,ovTaskEntity.getName_()).getJsonString(),
+                    task,StatusEnum.TRANSFER,false);
 
             return ovTaskEntity;
         }catch (Exception ex){
@@ -133,7 +137,7 @@ public class IProcessTaskServiceManager {
             ovTaskEntityMapper.delete(ovTaskEntity);
 
             //设置结束时间
-            ovTaskEntityMapper.setPrcoInstStatus(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"),processInstanceId);
+            ovTaskEntityMapper.setPrcoInstStatus(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"),processInstanceId);
 
             ProcessTaskParams processTaskParams=new ProcessTaskParams();
             processTaskParams.setVariables(variables);
@@ -329,7 +333,14 @@ public class IProcessTaskServiceManager {
 
             sendActionDto=this.sendAfter(sendActionDto,taskObj.getProcessInstanceId(),msgToUsers,processTaskParams,VarHashMap);
 
-            if(!SystemConfig.IsNullOrEmpty(msgToUsers)) {
+            /**
+             * 这里补了一下。
+             * 原开源项目在流程结束分了子流程结束和总流程结束，子流程结束应该继续流转，但是总流程结束就应该直接结束了
+             * 其划分子流程的写法过于粗暴，直接判断结束节点后边还有没有节点。
+             * 实际上这在bpmn2.0里边是不正确的。因为子流程根本就不需要去包含结束节点
+             * 具体代码见：com.activiti.z_six.strategy.sequenceFlow.EndEventStrategy.java
+             */
+            if(!SystemConfig.IsNullOrEmpty(msgToUsers) && !msgToUsers.equals("流程已结束")) {
                 //发送消息
                 smsEntityService.sendFlowMsg(msgToUsers,username,processInstance,processTaskParams,task,
                         taskObj,null,false);
@@ -337,13 +348,14 @@ public class IProcessTaskServiceManager {
             else{
                 //避免下一步选择人、或者没有接收人时报错，无法显示正常信息
                 try {
-                    msgToUsers = redisUtils.get(taskObj.getProcessInstanceId() + "_end").toString();
+//                    这里修改一下，流程结束应该要把流程通知返回给发起人，所以说这里不去使用msgToUsers,而是直接从流程去查流程发起人
+//                    msgToUsers = redisUtils.get(taskObj.getProcessInstanceId() + "_end").toString();
                     if (!SystemConfig.IsNullOrEmpty(msgToUsers)) {
                         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                                 .processInstanceId(taskObj.getProcessInstanceId())
                                 .singleResult();
                         //发送消息
-                        smsEntityService.sendFlowMsg(msgToUsers, username, processInstance,processTaskParams,task,
+                        smsEntityService.sendFlowMsg(historicProcessInstance.getStartUserId(), username, processInstance,processTaskParams,task,
                                 taskObj, historicProcessInstance, true);
                     }
                 }
@@ -381,7 +393,7 @@ public class IProcessTaskServiceManager {
             String titleModel=flowElementAttrs.getTitleModel();
             generWork.setId(id);
             if(SystemConfig.IsNullOrEmpty(generWork.getCreatetime()))
-                generWork.setCreatetime(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+                generWork.setCreatetime(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
 
             //生成标题
             if(!SystemConfig.IsNullOrEmpty(titleModel)) {
@@ -423,12 +435,12 @@ public class IProcessTaskServiceManager {
             taskInstEntity.setId_(countersignMyPk);
             taskInstEntity.setProc_inst_id_(processInstanceId);
             taskInstEntity.setStart_time_(ovTaskEntity.getCreate_time_());
-            taskInstEntity.setEnd_time_(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+            taskInstEntity.setEnd_time_(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
 
             //计算用时
             DateFormat startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date startDate=startTime.parse(ovTaskEntity.getCreate_time_());
-            Date endDate=startTime.parse(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+            Date endDate=startTime.parse(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
             long duration=endDate.getTime()-startDate.getTime();
 
             taskInstEntity.setDuration_(duration);

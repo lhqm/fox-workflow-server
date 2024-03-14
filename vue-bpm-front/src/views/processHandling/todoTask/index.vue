@@ -28,42 +28,46 @@
         <el-table-column prop="id" v-if="false" />
         <el-table-column prop="taskid" v-if="false" />
         <el-table-column prop="proce_inst_id" v-if="false" />
-        <el-table-column
-          label="标题"
-          prop="title"
-          :show-overflow-tooltip="true"
-        />
-        <el-table-column
-          label="任务名称"
-          prop="taskName"
-          :show-overflow-tooltip="true"
-        />
-        <el-table-column
-          label="流程名称"
-          prop="flowName"
-          :show-overflow-tooltip="true"
-        />
-        <el-table-column
-          label="申请时间"
-          prop="createtime"
-          :show-overflow-tooltip="true"
-        />
+        <el-table-column label="标题" prop="title" :show-overflow-tooltip="true" />
+        <el-table-column label="任务名称" prop="taskName" :show-overflow-tooltip="true" />
+        <el-table-column label="流程名称" prop="flowName" :show-overflow-tooltip="true" />
+        <el-table-column label="申请时间" prop="createtime" :show-overflow-tooltip="true" />
         <el-table-column prop="act_type" v-if="false" />
         <el-table-column prop="form_type" v-if="false" />
         <el-table-column prop="form_url" v-if="false" />
         <el-table-column prop="data_json" v-if="false" />
-        <el-table-column
-          label="审核状态"
-          prop="status"
-          :show-overflow-tooltip="true"
-        >
+        <el-table-column label="审核状态" prop="status" :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <div slot="reference" class="name-wrapper">
               <el-tag type="medium" v-if="scope.row.proce_inst_id == undefined">未提交</el-tag>
               <el-tag type="medium" v-else-if="scope.row.endtime == undefined">审批中</el-tag>
-              <el-tag type="warning" v-else-if="scope.row.act_type != undefined&&scope.row.act_type !=''&&scope.row.act_type =='returnWork'">驳回</el-tag>
-              <el-tag type="warning" v-else-if="scope.row.act_type != undefined&&scope.row.act_type !=''&&scope.row.act_type=='transfer'">移交</el-tag>
-              <el-tag type="warning" v-else-if="scope.row.act_type != undefined&&scope.row.act_type !=''&&scope.row.act_type=='countersign'">加签</el-tag>
+              <el-tag
+                type="warning"
+                v-else-if="
+                  scope.row.act_type != undefined &&
+                  scope.row.act_type != '' &&
+                  scope.row.act_type == 'returnWork'
+                "
+                >驳回</el-tag
+              >
+              <el-tag
+                type="warning"
+                v-else-if="
+                  scope.row.act_type != undefined &&
+                  scope.row.act_type != '' &&
+                  scope.row.act_type == 'transfer'
+                "
+                >移交</el-tag
+              >
+              <el-tag
+                type="warning"
+                v-else-if="
+                  scope.row.act_type != undefined &&
+                  scope.row.act_type != '' &&
+                  scope.row.act_type == 'countersign'
+                "
+                >加签</el-tag
+              >
               <el-tag type="medium" v-else>审核通过</el-tag>
             </div>
           </template>
@@ -151,7 +155,7 @@
   import reviewpage from '../reviewForm/reviewpage';
   import viewpage from '../reviewForm/viewpage';
   import Pagination from '@/components/Pagination';
-  import {getHisFormJson, getTodoList} from '@/api/task/task';
+  import { getHisFormJson, getTodoList } from '@/api/task/task';
 
   export default {
     name: 'todo',
@@ -164,8 +168,8 @@
         processKey: '',
         mapConfig: Object,
         mapList: [],
-        form_type:'',
-        form_url:'',
+        form_type: '',
+        form_url: '',
         processName: '',
         // 选中数组
         ids: [],
@@ -238,7 +242,7 @@
         this.loading = true;
         this.showMapJSON(row, false);
       },
-      //查看
+      // 查看
       handleView(row) {
         this.loading = true;
         this.showMapJSON(row, true);
@@ -289,7 +293,6 @@
             }
           })
           .catch((error) => {});
-
       }
     }
   };

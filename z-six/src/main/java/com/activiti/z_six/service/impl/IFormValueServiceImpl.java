@@ -185,7 +185,7 @@ public class IFormValueServiceImpl implements IFormValueService {
                                         }
                                     }
                                     fieldChildSqlStr.append("`").append("rdt").append("`,");
-                                    valueChildSqlStr.append("\"").append(DateTime.now().toString("yyyy-MM-dd hh:mm:ss")).append("\",");
+                                    valueChildSqlStr.append("\"").append(DateTime.now().toString("yyyy-MM-dd HH:mm:ss")).append("\",");
                                     fieldChildSqlStr.deleteCharAt(fieldChildSqlStr.length() - 1);
                                     valueChildSqlStr.deleteCharAt(valueChildSqlStr.length() - 1);
                                     childQql.set("insert into " + formChildName +
@@ -222,7 +222,7 @@ public class IFormValueServiceImpl implements IFormValueService {
                                     attachment.setName(file.getString("fileName"));
                                     attachment.setPath(file.getString("filePath"));
                                     attachment.setModuleName(object.getString("id"));
-                                    attachment.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+                                    attachment.setRdt(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
                                     attachment.setId(UUID.randomUUID().toString());
                                     attachmentList.add(attachment);
                                 });
@@ -259,7 +259,7 @@ public class IFormValueServiceImpl implements IFormValueService {
                                                 attachment.setDelFlag("0");
                                                 attachment.setName(file.getString("fileName"));
                                                 attachment.setPath(file.getString("filePath"));
-                                                attachment.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+                                                attachment.setRdt(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
                                                 attachment.setModuleName(rowlist.getString("id"));
                                                 attachment.setId(UUID.randomUUID().toString());
                                                 attachmentList.add(attachment);
@@ -294,7 +294,7 @@ public class IFormValueServiceImpl implements IFormValueService {
                                                     }
                                                 }
                                                 fieldChildSqlStr.append("`").append("rdt").append("`,");
-                                                valueChildSqlStr.append("\"").append(DateTime.now().toString("yyyy-MM-dd hh:mm:ss")).append("\",");
+                                                valueChildSqlStr.append("\"").append(DateTime.now().toString("yyyy-MM-dd HH:mm:ss")).append("\",");
                                                 fieldChildSqlStr.deleteCharAt(fieldChildSqlStr.length() - 1);
                                                 valueChildSqlStr.deleteCharAt(valueChildSqlStr.length() - 1);
                                                 childQql.set("insert into " + formChildName +
@@ -315,7 +315,7 @@ public class IFormValueServiceImpl implements IFormValueService {
                             fieldSqlStr.append(object.getString("id")).append("=").append("\"").append(object.get("value")).append("\",");
                         }
                     });
-                    fieldSqlStr.append(" rdt = ").append("\"").append(DateTime.now().toString("yyyy-MM-dd hh:mm:ss")).append("\",");
+                    fieldSqlStr.append(" rdt = ").append("\"").append(DateTime.now().toString("yyyy-MM-dd HH:mm:ss")).append("\",");
                     fieldSqlStr.deleteCharAt(fieldSqlStr.length() - 1);
                     sql= "update  " + form_data_table +" set "+fieldSqlStr + " where id='" + genId+"'" ;
                     log.info("最终执行的主表更新sql==={}",sql);
@@ -399,7 +399,7 @@ public class IFormValueServiceImpl implements IFormValueService {
                                     attachment.setName(file.getString("fileName"));
                                     attachment.setPath(file.getString("filePath"));
                                     attachment.setModuleName(object.getString("id"));
-                                    attachment.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+                                    attachment.setRdt(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
                                     attachment.setId(UUID.randomUUID().toString());
                                     attachmentList.add(attachment);
                                 });
@@ -437,7 +437,7 @@ public class IFormValueServiceImpl implements IFormValueService {
                                                 attachment.setName(file.getString("fileName"));
                                                 attachment.setPath(file.getString("filePath"));
                                                 attachment.setModuleName(rowlist.getString("id"));
-                                                attachment.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+                                                attachment.setRdt(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
                                                 attachment.setId(UUID.randomUUID().toString());
                                                 attachmentList.add(attachment);
                                             });
@@ -468,7 +468,7 @@ public class IFormValueServiceImpl implements IFormValueService {
                                                     }
                                                 }
                                                 fieldChildSqlStr.append("`").append("rdt").append("`,");
-                                                valueChildSqlStr.append("\"").append(DateTime.now().toString("yyyy-MM-dd hh:mm:ss")).append("\",");
+                                                valueChildSqlStr.append("\"").append(DateTime.now().toString("yyyy-MM-dd HH:mm:ss")).append("\",");
                                                 fieldChildSqlStr.deleteCharAt(fieldChildSqlStr.length() - 1);
                                                 valueChildSqlStr.deleteCharAt(valueChildSqlStr.length() - 1);
                                                 childQql.set("insert into " + formChildName +

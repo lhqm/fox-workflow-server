@@ -34,6 +34,9 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
 
     /**
      * 获取流程通知列表
+     * 搞不懂这作者为啥只给查审核详情，
+     * 我直接给查了所有的消息
+     * 因为流程审核通过的消息都不显示了，就离谱
      * @param toUser
      * @param pageNum
      * @param pagesize
@@ -126,7 +129,7 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
                 smsEntity.setState("0");
                 smsEntity.setToUser(recipient);
                 smsEntity.setSmsType("流程审核");
-                smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+                smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
                 smsEntity.setTitle("您有一项流程待办需要审核");
 
                 smsEntityMapper.addSms(smsEntity);
@@ -146,7 +149,7 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
             smsEntity.setState("0");
             smsEntity.setToUser(historicProcessInstance.getStartUserId());
             smsEntity.setSmsType("流程通知");
-            smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+            smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
             smsEntity.setTitle("审核结果通知");
             smsEntityMapper.addSms(smsEntity);
             //                向租户端发送结转消息
@@ -191,7 +194,7 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
             smsEntity.setState("0");
             smsEntity.setToUser(ccData.getUsername());
             smsEntity.setSmsType("流程知会");
-            smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+            smsEntity.setRdt(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
             smsEntity.setTitle("关于[" + generWork.getTitle() + "]的办理情况");
             smsEntityMapper.addSms(smsEntity);
         }

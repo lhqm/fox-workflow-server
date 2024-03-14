@@ -871,7 +871,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static Date getDayStart(Date date) throws Exception {
         String newDate = formatDate(date, "yyyy-MM-dd");
         newDate = newDate + " 00:00:00";
-        return parse(newDate, "yyyy-MM-dd hh:mm:ss");
+        return parse(newDate, "yyyy-MM-dd HH:mm:ss");
     }
     /**
      * 获取一天动态入参的时间
@@ -882,7 +882,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static Date getDayInputStart(Date date,String input) throws Exception {
         String newDate = formatDate(date, "yyyy-MM-dd");
         newDate = newDate +" " +input+":00:00";
-        return parse(newDate, "yyyy-MM-dd hh:mm:ss");
+        return parse(newDate, "yyyy-MM-dd HH:mm:ss");
     }
 
     /**
@@ -894,7 +894,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static Date forDateAddDay(Date packageEndDate) throws Exception {
         String newDate = formatDate(packageEndDate, "yyyy-MM-dd");
         newDate = newDate + " 23:59:59";
-        return parse(newDate, "yyyy-MM-dd hh:mm:ss");
+        return parse(newDate, "yyyy-MM-dd HH:mm:ss");
     }
     /**
      * 获取一天结束的时间
@@ -905,7 +905,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static Date getDayEnd(Date date) throws Exception {
         String newDate = formatDate(getDateAfterDayByDate(1, date), "yyyy-MM-dd");
         newDate = newDate + " 00:00:00";
-        return parse(newDate, "yyyy-MM-dd hh:mm:ss");
+        return parse(newDate, "yyyy-MM-dd HH:mm:ss");
     }
 
     /**

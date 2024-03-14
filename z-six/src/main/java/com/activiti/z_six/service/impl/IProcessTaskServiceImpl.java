@@ -14,6 +14,7 @@ import com.activiti.z_six.service.IProcessTaskService;
 import com.activiti.z_six.templete.FindWork;
 import com.activiti.z_six.tenant.WorkFlowMessageContext;
 import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.model.TransMsgExtension;
 import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.SystemConfig;
 import org.activiti.api.process.model.ProcessInstance;
@@ -247,7 +248,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             returnWorkEntity.setReturn_act_name(ovTaskEntity.getName_());
             returnWorkEntity.setReturnTo_act_name(historicTaskInstance.getName());
             returnWorkEntity.setReturnUser(username);
-            returnWorkEntity.setReturn_time(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+            returnWorkEntity.setReturn_time(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
 
             //如果退回后，需要重新走一遍，则删除，否则，不删除
             if(returnWayEntity.getRunWay().equals("none")) {
@@ -296,7 +297,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                     .sourceTaskId(returnWork.getTaskid())
 //                设置拒绝的状态
                     .statusChangeId(StatusEnum.REFUSE.getStatusCode())
-                    .statusChangeText(StatusEnum.REFUSE.getStatusCode())
+                    .statusChangeText(StatusEnum.REFUSE.getStatusName())
                     .build();
 //        发送到Redis的消息队列
             workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId()).getTenant_id_());
@@ -346,13 +347,14 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
     public OvTaskEntity countersign(TaskManageParams params){
         try{
             OvTaskEntity task=ovTaskEntityMapper.ovTaskEntity(params.getTaskid());
-            if(task.getAssignee_()==null){
+            String assignee = task.getAssignee_();
+            if(assignee ==null){
                 taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(params.getTaskid()).build());
             }
 
             OvTaskEntity ovTaskEntity = task;
             ovTaskEntity.setAssignee_(params.getToUser());
-            ovTaskEntity.setClaim_time_(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+            ovTaskEntity.setClaim_time_(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
 
             //执行加签
             taskRuntime.addCandidateUsers(TaskPayloadBuilder.addCandidateUsers().withTaskId(params.getTaskid())
@@ -373,7 +375,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             FlowMessage flowMessage = FlowMessage.builder()
                     .processInstanceId(params.getProc_inst_id())
 //                将加签消息封装送回
-                    .processMessage(params.getMsg())
+                    .processMessage(new TransMsgExtension(assignee,ovTaskEntity.getAssignee_(),params.getMsg(),task.getName_()).getJsonString())
 //                截取当前时间作为加签节点标注
                     .processTime(System.currentTimeMillis())
                     .isEnd(false)
@@ -383,7 +385,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                     .sourceTaskId(ovTaskEntity.getTask_def_key_())
 //                设置加签的状态
                     .statusChangeId(StatusEnum.COUNTERSIGN.getStatusCode())
-                    .statusChangeText(StatusEnum.COUNTERSIGN.getStatusCode())
+                    .statusChangeText(StatusEnum.COUNTERSIGN.getStatusName())
                     .build();
 //        发送到Redis的消息队列
             workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId()).getTenant_id_());
@@ -412,7 +414,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             ovTaskEntityMapper.setPrcoInstReason("refuse",params.getProc_inst_id());
 
             //设置结束时间
-            ovTaskEntityMapper.setPrcoInstStatus(DateTime.now().toString("YYYY-MM-DD hh:mm:ss"),params.getProc_inst_id());
+            ovTaskEntityMapper.setPrcoInstStatus(DateTime.now().toString("YYYY-MM-dd HH:mm:ss"),params.getProc_inst_id());
             ProcessTaskParams processTaskParams=new ProcessTaskParams();
             processTaskParams.setTaskId(params.getTaskid());
             processTaskParams.setProcessInstanceId(params.getProc_inst_id());
@@ -432,11 +434,11 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
 //                源ID设为流程的启动节点ID
                     .sourceTaskId(ovTaskEntity.getTask_def_key_())
 //                设置启动状态
-                    .statusChangeId(StatusEnum.STARTING.getStatusCode())
-                    .statusChangeText(StatusEnum.STARTING.getStatusCode())
+                    .statusChangeId(StatusEnum.REFUSE.getStatusCode())
+                    .statusChangeText(StatusEnum.REFUSE.getStatusCode())
                     .build();
 //        发送到Redis的消息队列
-            workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId()).getTenant_id_());
+            workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntity.getTenant_id_());
         }
         catch (Exception ex){
             ovTaskEntityMapper.setTaskStatus(ovTaskEntity);
@@ -491,7 +493,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             ovTaskEntityMapper.setPrcoInstReason("deleteTask",params.getProc_inst_id());
 
             //设置结束时间
-            ovTaskEntityMapper.setPrcoInstStatus(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"),params.getProc_inst_id());
+            ovTaskEntityMapper.setPrcoInstStatus(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"),params.getProc_inst_id());
         }
         catch (Exception ex){
             ovTaskEntityMapper.setTaskStatus(ovTaskEntity);

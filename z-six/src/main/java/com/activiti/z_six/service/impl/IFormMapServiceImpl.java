@@ -126,7 +126,7 @@ public class IFormMapServiceImpl implements IFormMapService {
             formEntity=new FormEntity();
             formEntity.setId(param.getString("formid"));
             formEntity.setName(configJson.getString("formRef"));
-            formEntity.setCreateTime(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+            formEntity.setCreateTime(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
             formEntity.setFormSort(configJson.getString("formSort"));
             formEntity.setForm_data_table(configJson.getString("tableName"));
             formEntity.setForm_json(param.getString("viewcode"));
@@ -268,7 +268,7 @@ public class IFormMapServiceImpl implements IFormMapService {
                         generWork.setData_json(formDataValue.getDataJson());
                     }
                     generWork.setStarter(username);
-                    generWork.setCreatetime(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+                    generWork.setCreatetime(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
                     generWork.setProcesskey(formDataValue.getProcessKey());
                     generWorkMapper.insertGenerWork(generWork);
                 }
@@ -296,7 +296,7 @@ public class IFormMapServiceImpl implements IFormMapService {
                 }
                 generWork.setProcesskey(formDataValue.getProcessKey());
                 generWork.setStarter(username);
-                generWork.setCreatetime(DateTime.now().toString("yyyy-MM-dd hh:mm:ss"));
+                generWork.setCreatetime(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
                 generWorkMapper.insertGenerWork(generWork);
             }
             return guid;

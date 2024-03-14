@@ -9,7 +9,7 @@
         <if test="status!='' and status!=null">
             and a.state=#{status}
         </if>
-        and a.smsType='流程审核'
+--         and a.smsType='流程审核'
         order by a.rdt desc LIMIT #{pageNum},#{pagesize}
     </select>
     <select id="smsListNum" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity"
@@ -18,7 +18,7 @@
         <if test="status!='' and status!=null">
             and a.state=#{status}
         </if>
-            and a.smsType='流程审核'
+--             and a.smsType='流程审核'
     </select>
     <select id="ccSmsList" parameterType="com.activiti.z_six.entity.taskAssignee.SmsEntity"
             resultType="com.activiti.z_six.entity.taskAssignee.SmsEntity">
