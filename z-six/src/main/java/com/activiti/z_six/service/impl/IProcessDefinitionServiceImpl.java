@@ -298,6 +298,7 @@ public class IProcessDefinitionServiceImpl implements IProcessDefinitionService 
 //        根据流程的key进行去重处理
         List<FlowEntity> commProceList=flowEntityMapper.getCommProceList(username)
                 .stream()
+                .filter(item->item.getProcessKey()!=null)
                 .collect(Collectors.collectingAndThen(
                         Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(FlowEntity::getProcessKey))),
                         ArrayList::new
@@ -308,12 +309,18 @@ public class IProcessDefinitionServiceImpl implements IProcessDefinitionService 
             hashMap.put("id",fs.getId());
             hashMap.put("name",fs.getName());
 //            对流程表单项目进行去重
-            List<FlowEntity> flowEntities=flowEntityMapper.getFlowListBySort(fs.getId().toString())
-                    .stream()
-                    .collect(Collectors.collectingAndThen(
-                            Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(FlowEntity::getProcessKey))),
-                            ArrayList::new
-                    ));
+            List<FlowEntity> dataList = flowEntityMapper.getFlowListBySort(fs.getId().toString());
+            List<FlowEntity> flowEntities=new LinkedList<>();
+            if (dataList!=null && dataList.size()>0){
+                flowEntities=dataList
+                        .stream()
+                        .filter(item-> item.getProcessKey()!=null)
+                        .collect(Collectors.collectingAndThen(
+                                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(FlowEntity::getProcessKey))),
+                                ArrayList::new
+                        ));
+            }
+
 
             if(flowEntities.size()>0){
                 hashMap.put("flowList",flowEntities);

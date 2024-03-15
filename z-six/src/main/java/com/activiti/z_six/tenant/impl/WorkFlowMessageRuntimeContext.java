@@ -38,9 +38,7 @@ public class WorkFlowMessageRuntimeContext implements WorkFlowMessageContext {
     @Override
     public List<FlowMessage> getFlowMessage(Boolean autoMode, String tenant) {
 //        获取到所有数据
-        Object allData = redisUtils.get(STATUS_DRIVER_CONTEXT + ((tenant==null || tenant.equals(""))?DEFAULT_TENANT:tenant));
-//        转为map
-        Map<String, String> map = (Map<String, String>) allData;
+        Map<String,String> map = redisUtils.getCacheMap(STATUS_DRIVER_CONTEXT + ((tenant==null || tenant.equals(""))?DEFAULT_TENANT:tenant));
 //        开始循环获取数据
         List<FlowMessage> flowMessageList=new LinkedList<>();
         Iterator<Map.Entry<String, String>> iterator = map.entrySet().iterator();
@@ -60,6 +58,9 @@ public class WorkFlowMessageRuntimeContext implements WorkFlowMessageContext {
 
     @Override
     public Long receiveFlowMessage(String askCode, String tenant) {
-        return receiveFlowMessageList(Collections.singletonList(askCode),tenant);
+        if (askCode==null || askCode.equals("")) return -1L;
+        System.out.println(tenant);
+        System.out.println(askCode);
+        return receiveFlowMessageList(Arrays.asList(askCode.split(",")),tenant);
     }
 }

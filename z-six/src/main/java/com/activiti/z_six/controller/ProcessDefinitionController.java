@@ -158,6 +158,7 @@ public class ProcessDefinitionController {
             return ResultRes.success(processDefinitionService.getSatrtPageData());
         }
         catch (Exception ex){
+            ex.printStackTrace();
             return ResultRes.error(ex.getMessage());
         }
     }
@@ -234,6 +235,7 @@ public class ProcessDefinitionController {
             return ResultRes.success(processDefinitionService.deleteDefinition(deploymentId));
         }
         catch (Exception ex){
+            ex.printStackTrace();
             return ResultRes.error(ex.getMessage());
         }
     }

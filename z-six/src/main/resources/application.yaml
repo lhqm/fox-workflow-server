@@ -1,3 +1,23 @@
 spring:
   profiles:
     active: dev
+
+
+oauth2:
+  client:
+    clientId: FOXCRM
+    clientSecret: ruifoxcrm
+    grantType: authorization_code
+    responseType: code
+#    PC端重定向
+    redirectUri: http://127.0.0.1:8088/
+#    手机端重定向
+    redirectUri-mobile: http://127.0.0.1:8088/
+#    token获取url
+    accessTokenUri: http://127.0.0.1:8001/oauth2/token
+#    用户认证url
+    userLoginUri: http://127.0.0.1:8001/oauth2/authorize
+    userAuthorizationUri: http://127.0.0.1:8001/oauth2/authorize
+#    用户信息获取
+    userInfoUri: http://127.0.0.1:8001/oauth2/userinfo
+    scope: all

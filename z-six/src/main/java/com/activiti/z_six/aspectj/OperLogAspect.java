@@ -225,7 +225,7 @@ public class OperLogAspect {
             for (int i = 0; i < paramsArray.length; i++) {
                 if (!isFilterObject(paramsArray[i])) {
                     Object jsonObj = JSON.toJSON(paramsArray[i]);
-                    params += jsonObj.toString() + " ";
+                    params += jsonObj==null?"":jsonObj.toString() + " ";
                 }
             }
         }

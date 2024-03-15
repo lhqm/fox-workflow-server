@@ -40,6 +40,11 @@ public class ResultRes {
                 SystemConfig.ResponseCode.SUCCESS.getDesc(),
                 obj);
     }
+    public static ResultRes success(String obj,Object data) {
+        return new ResultRes(SystemConfig.ResponseCode.SUCCESS.getCode(),
+                obj,
+                data);
+    }
     public static ResultRes error(Object obj) {
         return new ResultRes(SystemConfig.ResponseCode.ERROR.getCode(),
                 SystemConfig.ResponseCode.ERROR.getDesc(),

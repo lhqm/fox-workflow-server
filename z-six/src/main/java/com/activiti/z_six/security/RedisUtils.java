@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -167,6 +168,17 @@ public class RedisUtils {
     public Object hmGet(String key, Object hashKey) {
         HashOperations<String, Object, Object> hash = redisTemplate.opsForHash();
         return hash.get(key, hashKey);
+    }
+
+    /**
+     * 获得缓存的Map
+     *
+     * @param key \
+     * @return \
+     */
+    public <T> Map<String, T> getCacheMap(final String key)
+    {
+        return redisTemplate.opsForHash().entries(key);
     }
 
     /**
@@ -338,7 +350,9 @@ public class RedisUtils {
      */
     public long delCacheMapValue(final String key, final List<String> hkey)
     {
-        HashOperations hashOperations = redisTemplate.opsForHash();
+        HashOperations<String,Object,Object> hashOperations = redisTemplate.opsForHash();
+//        System.out.println(key);
+//        hkey.forEach(System.out::println);
         return hashOperations.delete(key, hkey.toArray(new String[0]));
     }
 }
