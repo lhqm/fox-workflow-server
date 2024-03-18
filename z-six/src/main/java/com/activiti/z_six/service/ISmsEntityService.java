@@ -3,7 +3,7 @@ package com.activiti.z_six.service;
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
 import com.activiti.z_six.entity.taskAssignee.OvTaskEntity;
 import com.activiti.z_six.entity.taskAssignee.SmsEntity;
-import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.model.api.FlowMessage;
 import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.task.model.Task;

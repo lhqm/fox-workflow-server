@@ -7,13 +7,12 @@ import com.activiti.z_six.dto.controllerParams.TaskManageParams;
 import com.activiti.z_six.dto.controllerParams.TaskParams;
 import com.activiti.z_six.entity.orgmanagement.UserEntity;
 import com.activiti.z_six.entity.taskAssignee.*;
-import com.activiti.z_six.entity.tenant.FlowProcess;
 import com.activiti.z_six.mapper.orgmanagementMapper.UserEntityMapper;
 import com.activiti.z_six.mapper.taskAssigneeMapper.*;
 import com.activiti.z_six.service.IProcessTaskService;
 import com.activiti.z_six.templete.FindWork;
-import com.activiti.z_six.tenant.WorkFlowMessageContext;
-import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.service.WorkFlowMessageContext;
+import com.activiti.z_six.tenant.model.api.FlowMessage;
 import com.activiti.z_six.tenant.model.TransMsgExtension;
 import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.SystemConfig;
@@ -85,15 +84,17 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
      * @return
      */
     @Override
-    public HashMap<String, Object> getHisFormJson(String processKey,String taskid){
+    public HashMap<String, Object> getHisFormJson(String processKey,String taskid,String userName){
         HashMap<String, Object> hashMap=new HashMap<>();
         try{
             //没有taskid说明是开始节点
             if(SystemConfig.IsNullOrEmpty(taskid)){
                 //获取当前登录用户信息
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                String username=authentication.getName();
+//                System.out.println("authentication = " + authentication);
+                String username=authentication==null?userName:authentication.getName();
                 securityUtil.logInAs(username);
+//                System.out.println("authentication = " + SecurityContextHolder.getContext().getAuthentication());
 
                 //获取流程模版信息
                 OvProcessInstance ovProcessInstance=ovProcessInstanceMapper.getProcessInsLastVersion(processKey);
@@ -132,12 +133,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
      * @return
      */
     @Override
-    public SendActionDto startProcess(ProcessTaskParams processTaskParams){
-        //获取当前登录用户信息
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username=authentication.getName();
-        securityUtil.logInAs(username);
-
+    public SendActionDto startProcess(ProcessTaskParams processTaskParams,String username){
         SendActionDto sendActionDto=new SendActionDto();
         //关联表单业务的主键，可通过参数传递过来，也可以自动生成
         String BusinessKey=processTaskParams.getBusinessKey();
@@ -200,6 +196,16 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
         processTaskParams.setProcessInstanceId(processInstance.getId());
         return this.sendWork(processTaskParams);
     }
+
+    @Override
+    public SendActionDto startProcess(ProcessTaskParams processTaskParams) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username=authentication.getName();
+        //获取当前登录用户信息
+        securityUtil.logInAs(username);
+        return startProcess(processTaskParams,username);
+    }
+
     /**
     发送到下一步
      */
@@ -661,6 +667,12 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
         hashMap.put("total",generWorkNum.size());
         return hashMap;
     }
+
+    @Override
+    public HashMap<String, Object> getHisFormJson(String processKey, String taskid) {
+        return getHisFormJson(processKey,taskid,null);
+    }
+
     @Override
     public String setTitle(String proce_inst_id,String id,String processKey){
         return processTaskServiceManager.setTitle(proce_inst_id,id,processKey);

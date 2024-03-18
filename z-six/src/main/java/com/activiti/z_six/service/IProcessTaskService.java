@@ -18,6 +18,7 @@ public interface IProcessTaskService {
     variables：自定义参数
      */
     SendActionDto startProcess(ProcessTaskParams processTaskParams);
+    SendActionDto startProcess(ProcessTaskParams processTaskParams,String userName);
     /**
     流程审核
     taskId：任务id
@@ -111,6 +112,7 @@ public interface IProcessTaskService {
      * @return
      */
     HashMap<String, Object> getHisFormJson(String processKey,String taskid);
+    HashMap<String, Object> getHisFormJson(String processKey,String taskid,String userName);
     /**
     设置标题
      */

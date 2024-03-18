@@ -9,7 +9,7 @@ import com.activiti.z_six.security.RedisUtils;
 import com.activiti.z_six.service.ISmsEntityService;
 import com.activiti.z_six.templete.FindBpmModel;
 import com.activiti.z_six.templete.FindWork;
-import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.model.api.FlowMessage;
 import com.activiti.z_six.tenant.model.TransMsgExtension;
 import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.DateUtils;

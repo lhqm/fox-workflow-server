@@ -1,6 +1,6 @@
-package com.activiti.z_six.tenant;
+package com.activiti.z_six.tenant.service;
 
-import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.model.api.FlowMessage;
 
 import java.util.List;
 

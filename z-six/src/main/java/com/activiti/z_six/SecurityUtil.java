@@ -65,4 +65,7 @@ public class SecurityUtil {
         }));
         org.activiti.engine.impl.identity.Authentication.setAuthenticatedUserId(username);
     }
+    public void logInOnlyAct(String username) {
+        org.activiti.engine.impl.identity.Authentication.setAuthenticatedUserId(username);
+    }
 }

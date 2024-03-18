@@ -1,4 +1,4 @@
-package com.activiti.z_six.tenant.model;
+package com.activiti.z_six.tenant.model.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

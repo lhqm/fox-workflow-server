@@ -1,8 +1,8 @@
-package com.activiti.z_six.tenant.impl;
+package com.activiti.z_six.tenant.service.impl;
 
 import com.activiti.z_six.security.RedisUtils;
-import com.activiti.z_six.tenant.WorkFlowMessageContext;
-import com.activiti.z_six.tenant.model.FlowMessage;
+import com.activiti.z_six.tenant.model.api.FlowMessage;
+import com.activiti.z_six.tenant.service.WorkFlowMessageContext;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
