@@ -80,6 +80,7 @@ public class IProcessDefinitionManager {
         if(redisUtils.exists("UserTask_"+task_def_key)){
             redisUtils.remove("UserTask_"+task_def_key);
         }
+        System.out.println("写入数据:"+JSONObject.toJSONString(taskDefinitionParams));
         redisUtils.set("UserTask_"+task_def_key,JSON.toJSONString(taskDefinitionParams),expireTime);
         return null;
     }
@@ -107,13 +108,17 @@ public class IProcessDefinitionManager {
 
     /**
      * 创建一个空的节点属性
+     *
      * @param task_def_key
+     * @param flowElementAttrs
      * @return
      */
-    public TaskDefinitionParams getTaskDefinitionParams(String task_def_key){
+    public TaskDefinitionParams getTaskDefinitionParams(String task_def_key, FlowElementAttrs flowElementAttrs){
         TaskDefinitionParams taskDefinitionParams=new TaskDefinitionParams();
+        System.out.println("进入方法");
         //判断redis中是否存在
         if(redisUtils.exists("UserTask_"+task_def_key)){
+            System.out.println("找到缓存:"+task_def_key);
             taskDefinitionParams=JSONObject.parseObject(redisUtils.get("UserTask_"+task_def_key).toString()
                     ,TaskDefinitionParams.class);
         }
@@ -123,8 +128,16 @@ public class IProcessDefinitionManager {
             TaskModel taskModel = new TaskModel();
             BeanUtils.copyProperties(taskElementAttrs, taskModel);
             //组织数据
+//            抽取这一部分数据
+            if (flowElementAttrs != null){
+                System.out.println("即将更新数据："+JSONObject.toJSONString(taskModel));
+                System.out.println("即将更新数据："+JSONObject.toJSONString(flowElementAttrs));
+                BeanUtils.copyProperties(flowElementAttrs, taskModel);
+            }
+            System.out.println("即将写入数据："+JSONObject.toJSONString(taskModel));
             taskDefinitionParams.setFormModel(taskModel);
         }
+        System.out.println("即将写入数据："+JSONObject.toJSONString(taskDefinitionParams));
         return taskDefinitionParams;
     }
 
@@ -173,7 +186,7 @@ public class IProcessDefinitionManager {
                 if(!isExists){
                     mapperManager.setFlowElementAttrs(flowElementAttrs);
                 }
-                TaskDefinitionParams taskDefinitionParams=getTaskDefinitionParams(usertaskId);
+                TaskDefinitionParams taskDefinitionParams=getTaskDefinitionParams(usertaskId,flowElementAttrs);
                 userTasks.add(taskDefinitionParams);
             }
         }

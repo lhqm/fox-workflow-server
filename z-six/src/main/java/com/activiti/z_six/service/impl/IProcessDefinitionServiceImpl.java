@@ -1,6 +1,5 @@
 package com.activiti.z_six.service.impl;
 
-import com.activiti.z_six.SecurityUtil;
 import com.activiti.z_six.dto.controllerParams.*;
 import com.activiti.z_six.entity.process.FlowEntity;
 import com.activiti.z_six.entity.process.FlowSort;
@@ -11,10 +10,12 @@ import com.activiti.z_six.mapper.processMapper.FlowEntityMapper;
 import com.activiti.z_six.mapper.processMapper.FlowSortMapper;
 import com.activiti.z_six.mapper.taskAssigneeMapper.FlowElementAttrsMapper;
 import com.activiti.z_six.mapper.taskAssigneeMapper.OvProcessInstanceMapper;
+import com.activiti.z_six.security.RedisUtils;
 import com.activiti.z_six.service.IProcessDefinitionService;
 import com.activiti.z_six.service.manager.IProcessDefinitionManager;
 import com.activiti.z_six.service.manager.MapperManager;
 import com.activiti.z_six.util.SystemConfig;
+import com.alibaba.fastjson.JSON;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.RepositoryService;
@@ -45,6 +46,8 @@ public class IProcessDefinitionServiceImpl implements IProcessDefinitionService 
     private IProcessDefinitionManager iProcessDefinitionManager;
     @Autowired
     private MapperManager mapperManager;
+    @Autowired
+    private RedisUtils redisUtils;
 
 
     /**
@@ -182,7 +185,7 @@ public class IProcessDefinitionServiceImpl implements IProcessDefinitionService 
         //节点基本信息
         FlowElementAttrs taskElementAttrs=mapperManager.getFlowElementAttrs(task_def_key);
         if(taskElementAttrs==null){
-            return iProcessDefinitionManager.getTaskDefinitionParams(task_def_key);
+            return iProcessDefinitionManager.getTaskDefinitionParams(task_def_key, null);
         }
         else {
             TaskModel taskModel = new TaskModel();
@@ -205,6 +208,11 @@ public class IProcessDefinitionServiceImpl implements IProcessDefinitionService 
                 .getFlowElementAttrs(taskDefinitionParams.getId()))
                 .orElseGet(()->iProcessDefinitionManager
                         .saveFlowElementAttrs(taskDefinitionParams.getId(),taskDefinitionParams));
+//        TODO:核心问题（修复改变任务节点的审核规则不起作用）
+        /*为什么会存在配置了驳回规则和其他操作信息，但是却发生失效的问题。原因在于配置了taskParam获取走缓存，
+        但是保存走的MySQL，两边数据不一样，最后被覆盖掉了
+        实际设计上直接惰性加载即可，也不用在之后去另做修改*/
+        redisUtils.remove("UserTask_"+taskDefinitionParams.getId());
         if(taskElementAttrs!=null){
             BeanUtils.copyProperties(taskDefinitionParams.getFormModel(),taskElementAttrs);
             //节点基本信息
