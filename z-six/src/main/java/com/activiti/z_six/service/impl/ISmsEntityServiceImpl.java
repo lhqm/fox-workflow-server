@@ -113,6 +113,7 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
                                 : task.getCompletedDate().getTime())
 //                设置任务ID，表明进行到哪一步了
                 .sourceTaskId(ovTaskEntity.getTask_def_key_())
+                .processKey(processTaskParams.getProcessKey())
 //                设置处理信息
                 .processMessage(processTaskParams.getMsg())
                 .build();

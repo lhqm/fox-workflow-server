@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class FlowMessage {
 //    流程实例ID
     private String processInstanceId;
+    private String processKey;
 //    流程状态转换ID
     private String statusChangeId;
 //    流程状态转换标识

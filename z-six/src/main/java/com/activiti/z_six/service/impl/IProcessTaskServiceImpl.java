@@ -174,6 +174,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                 .targetTaskId(userTask.getId())
 //                源ID设为流程的启动节点ID
                 .sourceTaskId(flowElements.get(0).getId())
+                .processKey(processTaskParams.getProcessKey())
 //                设置启动状态
                 .statusChangeId(StatusEnum.STARTING.getStatusCode())
                 .statusChangeText(StatusEnum.STARTING.getStatusName())
@@ -301,6 +302,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                     .targetTaskId(returnWayEntity.getTask_def_id())
 //                源ID设为流程的启动节点ID
                     .sourceTaskId(returnWork.getTaskid())
+                    .processKey(taskEntity.getProc_def_id_().split(":")[0])
 //                设置拒绝的状态
                     .statusChangeId(StatusEnum.REFUSE.getStatusCode())
                     .statusChangeText(StatusEnum.REFUSE.getStatusName())
@@ -389,6 +391,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                     .targetTaskId(ovTaskEntity.getTask_def_key_())
 //                源ID设为流程的当前节点ID，加签后，流程依旧卡在这个节点上
                     .sourceTaskId(ovTaskEntity.getTask_def_key_())
+                    .processKey(ovTaskEntity.getProc_def_id_().split(":")[1])
 //                设置加签的状态
                     .statusChangeId(StatusEnum.COUNTERSIGN.getStatusCode())
                     .statusChangeText(StatusEnum.COUNTERSIGN.getStatusName())
@@ -439,6 +442,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                     .targetTaskId(null)
 //                源ID设为流程的启动节点ID
                     .sourceTaskId(ovTaskEntity.getTask_def_key_())
+                    .processKey(ovTaskEntity.getProc_def_id_().split(":")[0])
 //                设置启动状态
                     .statusChangeId(StatusEnum.REFUSE.getStatusCode())
                     .statusChangeText(StatusEnum.REFUSE.getStatusCode())

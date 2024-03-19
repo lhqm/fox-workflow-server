@@ -4,10 +4,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class RequestUtils {
 
@@ -39,5 +36,10 @@ public class RequestUtils {
             }
         }
         return headerMap;
+    }
+
+    public static String getUserName(){
+        String userName = Objects.requireNonNull(getCurrentRequest()).getHeader("userName");
+        return userName==null?"admin":userName;
     }
 }

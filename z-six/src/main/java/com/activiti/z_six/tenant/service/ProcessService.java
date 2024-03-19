@@ -2,6 +2,7 @@ package com.activiti.z_six.tenant.service;
 
 import com.activiti.z_six.dto.SendActionDto;
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
+import com.activiti.z_six.util.ResultRes;
 
 import java.util.Map;
 
@@ -11,4 +12,6 @@ public interface ProcessService {
     String submitForm(String processKey, String dataJson,String taskId) throws Exception;
 
     SendActionDto startProcess(ProcessTaskParams processTaskParams);
+
+    ResultRes getProcessDefinition(String processInstanceId);
 }

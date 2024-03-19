@@ -68,4 +68,18 @@ public class SecurityUtil {
     public void logInOnlyAct(String username) {
         org.activiti.engine.impl.identity.Authentication.setAuthenticatedUserId(username);
     }
+
+    /**
+     * 安全登录（常用于强制登录某一系统）
+     * @param username 用户名
+     */
+    public void loginSafely(String username) {
+        try {
+//            根据用户名正常登录
+            logInAs(username);
+        }catch (Exception e){
+//            没找到，直接登录默认账号进行业务
+            logInAs("admin");
+        }
+    }
 }

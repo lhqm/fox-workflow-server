@@ -316,6 +316,7 @@ public class IProcessTaskServiceManager {
                         .sourceTaskId(sendActionDto.getCurTask_key())
                         .processTime(System.currentTimeMillis())
                         .targetTaskId(userTask.getId())
+                        .processKey(processTaskParams.getProcessKey())
                         .processInstanceId(taskObj.getProcessInstanceId())
                         .isEnd(false)
                         .build();
@@ -493,38 +494,6 @@ public class IProcessTaskServiceManager {
     }
 
     /**
-     * 获取到对应流程定义ID的整体流程信息
-     * @param definitionId 流程定义信息ID
-     * @return 流程定义信息
-     */
-
-    public List<FlowProcess> getFlowElementsByProcessDefinition(String definitionId){
-//        获取到流程的模型实例
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(definitionId);
-//        在模型的流程表里选择第一个流程作为流程对象定义（一般也只有一个）
-        Process process = bpmnModel.getProcesses().get(0);
-//        返回数据，这里开始对流程信息进行解构，获取到所有用户任务。因为用户任务才能参与审核，审核才会唤醒流转，流转才会改变状态
-        Collection<FlowElement> flowElements = process.getFlowElements();
-//        获取到流程路径定义
-        List<FlowProcess> flowDefinitionMap = FlowElementUtil.getFlowDefinitionMap(flowElements);
-        for (FlowProcess flowProcess : flowDefinitionMap) {
-            System.out.println(JSONArray.toJSONString(flowProcess));
-        }
-        return flowDefinitionMap;
-    }
-
-    /**
-     * 通过流程实例ID去获取流程定义
-     * @param instanceId 流程实例ID
-     * @return 流程定义信息
-     */
-
-    public List<FlowProcess> getFlowElementsByProcessInstance(String instanceId){
-        ProcessInstance processInstance = processRuntime.processInstance(instanceId);
-        return getFlowElementsByProcessDefinition(processInstance.getProcessDefinitionId());
-    }
-
-    /**
      * 根据流程实例ID和用户任务节点ID获取到详细的用户节点任务信息
      * @param processInstanceId 流程实例ID
      * @param taskId 流程节点ID
@@ -562,6 +531,7 @@ public class IProcessTaskServiceManager {
                 .processTime(System.currentTimeMillis())
                 .targetTaskId(task.getTask_def_key_())
                 .sourceTaskId(task.getTask_def_key_())
+                .processKey(task.getProc_def_id_().split(":")[0])
                 .isEnd(endTask)
                 .build();
 //            移交到租户端

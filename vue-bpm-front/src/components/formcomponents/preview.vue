@@ -162,13 +162,12 @@
       handlerInitDatas: datas
     },
     created() {
-      this.handlerInitDatas(); //初始化表单
-      //表单赋值
+      this.handlerInitDatas(); // 初始化表单
+      // 表单赋值
       if (this.itemList == '') {
-        return;
       } else {
         if (this.itemDataJson == undefined) return;
-        let subColumns = this.itemList.filter((col) => {
+        const subColumns = this.itemList.filter((col) => {
           if (col.compType == 'dynamicTable') {
             if (
               this.itemDataJson[col.id] != '' &&
@@ -180,10 +179,10 @@
             return col;
           } else {
             if (col.compType == 'row') {
-              let rows = col.columns;
-              let colRows = rows.filter((row) => {
-                let rowList = row.list;
-                let colRowList = rowList.filter((rl) => {
+              const rows = col.columns;
+              const colRows = rows.filter((row) => {
+                const rowList = row.list;
+                const colRowList = rowList.filter((rl) => {
                   if (rl.compType == 'dynamicTable') {
                     if (
                       this.itemDataJson[rl.id] != '' &&
