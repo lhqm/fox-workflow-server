@@ -9,6 +9,7 @@
         <icon-svg slot="prefix" name="password" />
       </el-input>
       <el-checkbox v-model="formLogin.checked">下次自动登录</el-checkbox>
+      <el-link style="float: right" :href="ramUrl" type="primary" size="mini">RAM登录</el-link>
       <div class="btn">
         <el-button type="primary" @click="submit" @keyup.enter="keyDown">登录</el-button>
       </div>
@@ -21,11 +22,14 @@
 </template>
 <script>
   import { mapActions } from 'vuex';
+  import { useRoute } from 'vue-router/composables';
+  import { getRamUrl } from '@/api/login';
 
   export default {
     name: 'login-box',
     data() {
       return {
+        ramUrl: '',
         formLogin: {
           username: '',
           password: '',
@@ -35,6 +39,17 @@
     },
     methods: {
       ...mapActions('store/account', ['login']),
+      toRam() {
+        // 没有初始化，就去初始化这个路径
+        if (!this.ramUrl || this.ramUrl === '') {
+          getRamUrl().then((res) => {
+            console.log(res.result);
+            this.ramUrl = res.result;
+            console.log('收到重定向：' + this.ramUrl);
+          });
+        }
+        // console.log(this.ramUrl);
+      },
       submit() {
         if (!this.formLogin.username || !this.formLogin.password) {
           this.$message.error('用户名或密码不能为空');
@@ -44,12 +59,11 @@
           username: this.formLogin.username,
           password: this.formLogin.password
         }).then((res) => {
-          if(res!=false){
+          if (res != false) {
             this.$message.success('登录成功');
             // 重定向对象不存在则返回顶层路径
             this.$router.replace(this.$route.query.redirect || '/');
           }
-
         });
       },
       keyDown(e) {
@@ -62,6 +76,10 @@
     mounted() {
       // 绑定监听事件
       window.addEventListener('keydown', this.keyDown);
+      // 获取用户的code
+      const route = useRoute();
+      this.toRam();
+      console.log(route.query.code);
     },
     destroyed() {
       // 销毁事件
@@ -75,14 +93,15 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 312px;
+    width: 700px;
     height: 420px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.8);
     padding: 14px 16px 7px 16px;
+    box-shadow: #3d96f9 5px 5px 10px;
     .title {
       width: 100%;
       font-size: 23px;
-      font-family: SourceHanSansCN-Medium, SourceHanSansCN;
+      font-family: '宋体', sans-serif;
       font-weight: 500;
       color: #3b3b3b;
       text-align: center;
@@ -125,7 +144,7 @@
         }
       }
       .btn {
-        margin-top: 65px;
+        margin-top: 5rem;
         .el-button {
           width: 100%;
           height: 36px;
@@ -135,7 +154,7 @@
       }
     }
     .footer {
-      margin-top: 45px;
+      margin-top: 2rem;
       text-align: center;
       .login-icon {
         width: 55px;

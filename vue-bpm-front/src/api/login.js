@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 
-//获取token
+// 获取token
 export function getToken(username, password) {
   const data = {
     username,
@@ -44,5 +44,10 @@ export function logout() {
     method: 'post'
   });
 }
-
-
+// 获取RAM路径
+export function getRamUrl() {
+  return request({
+    url: '/api/ram/redirectUrl',
+    method: 'get'
+  });
+}
