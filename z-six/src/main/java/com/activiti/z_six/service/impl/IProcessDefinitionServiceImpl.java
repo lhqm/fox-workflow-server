@@ -212,7 +212,7 @@ public class IProcessDefinitionServiceImpl implements IProcessDefinitionService 
         /*为什么会存在配置了驳回规则和其他操作信息，但是却发生失效的问题。原因在于配置了taskParam获取走缓存，
         但是保存走的MySQL，两边数据不一样，最后被覆盖掉了
         实际设计上直接惰性加载即可，也不用在之后去另做修改*/
-        redisUtils.remove("UserTask_"+taskDefinitionParams.getId());
+//        redisUtils.remove("UserTask_"+taskDefinitionParams.getId());
         if(taskElementAttrs!=null){
             BeanUtils.copyProperties(taskDefinitionParams.getFormModel(),taskElementAttrs);
             //节点基本信息

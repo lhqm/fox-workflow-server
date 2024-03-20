@@ -151,14 +151,20 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
         }
         //获取用户任务
         UserTask userTask = (UserTask) outgoingFlows.get(0).getTargetFlowElement();
-        //启动实例
-        ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
-                .start()
-                .withProcessDefinitionKey(processTaskParams.getProcessKey())
-                .withName(processTaskParams.getProcessName())
-                .withVariable(userTask.getId()+"_byStarter",username)
-                .withBusinessKey(BusinessKey)
-                .build());
+        //填入用户变量
+        HashMap<String, Object> vars = new HashMap<>();
+        vars.put(userTask.getId()+"_byStarter",username);
+        //以多租户形式启动实例
+        org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.startProcessInstanceByKeyAndTenantId(processTaskParams.getProcessKey(),
+                processTaskParams.getProcessName(), vars,
+                processTaskParams.getTenantId() == null ? "main" : processTaskParams.getTenantId());
+//        ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
+//                .start()
+//                .withProcessDefinitionKey(processTaskParams.getProcessKey())
+//                .withName(processTaskParams.getProcessName())
+//                .withVariable(userTask.getId()+"_byStarter",username)
+//                .withBusinessKey(BusinessKey)
+//                .build());
 
 //        推送流程启动的消息
         List<FlowElement> flowElements = (List<FlowElement>) process.getFlowElements();
