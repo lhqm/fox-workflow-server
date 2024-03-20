@@ -59,7 +59,7 @@ public class FlowProcessController {
         }
     }
     @GetMapping("/processDefinition")
-    public ResultRes processDefinition(String processInstanceId){
-        return ResultRes.success(processService.getProcessDefinition(processInstanceId));
+    public ResultRes processDefinition(String processKey){
+        return ResultRes.success(processService.getProcessDefinition(processKey));
     }
 }

@@ -25,7 +25,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                         ,"/deployment/**"
                         ,"/menu/**"
                         ,"flowCond/**"
-                        ,"tenant/api/**"
+                        ,"/tenant/api/**"
+                        ,"/api/ram/**"
                         ,"/dicts/**");
     }
 
