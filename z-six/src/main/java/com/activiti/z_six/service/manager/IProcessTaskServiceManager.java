@@ -13,6 +13,7 @@ import com.activiti.z_six.tenant.model.api.FlowMessage;
 import com.activiti.z_six.tenant.model.TransMsgExtension;
 import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.DateUtils;
+import com.activiti.z_six.util.SecurityUtils;
 import com.activiti.z_six.util.SystemConfig;
 import com.activiti.z_six.util.flow.FlowElementUtil;
 import com.alibaba.fastjson.JSONArray;
@@ -111,7 +112,7 @@ public class IProcessTaskServiceManager {
 
 //            发送消息给租户端
             sendMessageToTenant(processInstanceId,
-                    new TransMsgExtension(assignee,toUser,Msg,ovTaskEntity.getName_()).getJsonString(),
+                    new TransMsgExtension(SecurityUtils.getUsername(),toUser,Msg,ovTaskEntity.getName_()).getJsonString(),
                     task,StatusEnum.TRANSFER,false);
 
             return ovTaskEntity;
