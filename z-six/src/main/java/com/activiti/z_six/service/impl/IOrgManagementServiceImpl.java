@@ -13,6 +13,9 @@ import com.activiti.z_six.mapper.orgmanagementMapper.*;
 import com.activiti.z_six.service.IOrgManagementService;
 import com.activiti.z_six.service.manager.CommManager;
 import com.activiti.z_six.util.SystemConfig;
+import com.activiti.z_six.util.encode.AesPasswordEncoder;
+import com.activiti.z_six.util.encode.AesUtil;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -760,12 +763,14 @@ public class IOrgManagementServiceImpl implements IOrgManagementService {
      * @return
      */
     @Override
+    @SneakyThrows
     public String addUser(UserParams param) throws BusinessException {
-        String password=passwordEncoder.encode("1");
+        String password=param.getPassword()==null? AesUtil.encryptAES("123456"):param.getPassword();
         UserEntity userEntity=new UserEntity();
         BeanUtils.copyProperties(param, userEntity);
         userEntity.setState(1);
         userEntity.setRoles("ROLE_ACTIVITI_USER");
+        userEntity.setDepartid(param.getDepartid());
         userEntity.setPassword(password);
         userEntity.setGuuid(UUID.randomUUID().toString());
 
@@ -847,7 +852,7 @@ public class IOrgManagementServiceImpl implements IOrgManagementService {
     @Override
     public String updatePwd(String username, String oldPwd, String newPwd){
         UserInfo userInfo = mapper.getUserInfo(username);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        AesPasswordEncoder encoder = new AesPasswordEncoder();
         if(encoder.matches(oldPwd,userInfo.getPassword())) {
             String newPassword=passwordEncoder.encode(newPwd);
             userEntityMapper.updatePwd(username,newPassword);

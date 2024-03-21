@@ -31,6 +31,9 @@ public class OauthUserService {
         UserParams localUser = new UserParams();
         localUser.setUsername(user.getUsername());
         localUser.setName(user.getName());
+        localUser.setPassword(user.getPassword());
+//        部门置为默认
+        localUser.setDepartid(10);
         orgManagementService.addUser(localUser);
         return user;
     }

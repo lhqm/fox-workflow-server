@@ -5,8 +5,8 @@ spring:
 
 oauth2:
   client:
-    clientId: FOXCRM
-    clientSecret: ruifoxcrm
+    clientId: FOXOA
+    clientSecret: foxoask
     grantType: authorization_code
     responseType: code
 #    PC端重定向

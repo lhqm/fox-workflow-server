@@ -6,6 +6,7 @@ import com.activiti.z_six.entity.UserInfo;
 import com.activiti.z_six.service.IOrgManagementService;
 import com.activiti.z_six.service.impl.IUserInfoServiceImpl;
 import com.activiti.z_six.util.ResultRes;
+import com.activiti.z_six.util.encode.AesPasswordEncoder;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -60,7 +61,7 @@ public class UserInfoController {
     @GetMapping(value="/login/getUserInfo")
     public ResultRes getUserInfo(@RequestParam("username") String username, @RequestParam("password") String password){
         UserInfo userInfo= userInfoService.getUserInfo(username);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        AesPasswordEncoder encoder = new AesPasswordEncoder();
         JSONObject obj=new JSONObject();
         if(userInfo!=null) {
             if(encoder.matches(password,userInfo.getPassword())) {

@@ -46,12 +46,13 @@ public class IUserInfoServiceImpl implements IUserInfoService {
                 + "&username="+username+"&password="+password+""
                 + "&grant_type=password";
         //增加header参数
-        java.util.Map<String, String> headerMap = new Hashtable<String, String>();
+        java.util.Map<String, String> headerMap = new Hashtable<>();
         headerMap.put("Content-Type", "application/json");
         headerMap.put("charset", "utf-8");
 
         //请求返回信息json
         JSONObject json = null;
+        System.out.println(username+"\n"+password);
         String jsonData = HttpsUtils.post(url, headerMap, null);
 
         json = JSONObject.parseObject(jsonData);

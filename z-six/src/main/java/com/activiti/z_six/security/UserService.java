@@ -2,6 +2,7 @@ package com.activiti.z_six.security;
 
 import com.activiti.z_six.entity.UserInfo;
 import com.activiti.z_six.mapper.UserInfoMapper;
+import com.activiti.z_six.util.encode.AesPasswordEncoder;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,6 @@ public class UserService implements UserDetailsService {
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new AesPasswordEncoder();
     }
 }

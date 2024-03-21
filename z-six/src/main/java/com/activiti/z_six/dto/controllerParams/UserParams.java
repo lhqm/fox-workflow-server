@@ -16,6 +16,8 @@ public class UserParams {
      * 登录帐号
      */
     private String username;
+
+    private String password;
     /**
      * 用户名称
      */

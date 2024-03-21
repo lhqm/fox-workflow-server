@@ -3,7 +3,9 @@ package com.activiti.z_six.oauth;
 import com.activiti.z_six.entity.UserInfo;
 import com.activiti.z_six.exception.ServiceException;
 import com.activiti.z_six.service.IUserInfoService;
+import com.activiti.z_six.service.impl.IUserInfoServiceImpl;
 import com.activiti.z_six.util.ResultRes;
+import com.activiti.z_six.util.encode.AesUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
@@ -87,6 +89,8 @@ public class OauthProcessor {
         AuthUser user = getUserInfo(token);
         UserInfo userInfo = new UserInfo();
         userInfo.setUsername(user.getAccount());
+        userInfo.setName(user.getNickName());
+        userInfo.setPassword(user.getPassword()==null?AesUtil.encryptAES("123456"):user.getPassword());
 //        通过用户账户，校验用户是否存在或者已经绑定，并且自动返回user
         UserInfo localUser = oauthUserService.getUserInLocalDataBase(userInfo);
 //      通过上一步校验获得的User，通过快速登录的方式执行登录，并写入安全上下文
@@ -97,8 +101,11 @@ public class OauthProcessor {
         OauthUserQuickLoginAuthenticationToken authenticationToken = new OauthUserQuickLoginAuthenticationToken(loginUser);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         //封装返回用户信息
-        HashMap<String, Object> tokens = userInfoService.getToken(loginUser.getUsername(), loginUser.getPassword());
-        return ResultRes.success("登录成功",tokens);
+        String password = AesUtil.decryptAES(loginUser.getPassword());
+        HashMap<String, Object> tokens = userInfoService.getToken(loginUser.getUsername(), password);
+        HashMap<String, Object> info = userInfoService.loginAs(loginUser.getUsername(), password);
+        info.putAll(tokens);
+        return ResultRes.success("登录成功",info);
     }
 
     /**
