@@ -38,12 +38,11 @@
       };
     },
     methods: {
-      ...mapActions('store/account', ['login']),
+      ...mapActions('store/account', ['login','codeAuth']),
       toRam() {
         // 没有初始化，就去初始化这个路径
         if (!this.ramUrl || this.ramUrl === '') {
           getRamUrl().then((res) => {
-            console.log(res.result);
             this.ramUrl = res.result;
             console.log('收到重定向：' + this.ramUrl);
           });
@@ -79,7 +78,27 @@
       // 获取用户的code
       const route = useRoute();
       this.toRam();
-      console.log(route.query.code);
+      const path = decodeURIComponent(this.$route.fullPath);
+      let code;
+      for (let parameter of path.split('?')) {
+        // 存在code
+        if (parameter.includes("code")){
+          parameter.split('&').forEach((item) => {
+            if (item.includes("code")){
+              code = item.split("=")[1];
+            }
+          });
+        }
+      }
+      if (code){
+        this.codeAuth({code:code}).then((res) => {
+          if (res != false) {
+            this.$message.success('登录成功');
+            // 重定向对象不存在则返回顶层路径
+            this.$router.push('/')
+          }
+        });
+      }
     },
     destroyed() {
       // 销毁事件

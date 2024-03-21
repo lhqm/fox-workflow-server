@@ -51,3 +51,10 @@ export function getRamUrl() {
     method: 'get'
   });
 }
+
+export function codeAuth(code) {
+  return request({
+    url: '/api/ram/codeAuth?code='+code,
+    method: 'get'
+  });
+}

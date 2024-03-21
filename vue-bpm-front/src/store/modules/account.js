@@ -1,7 +1,7 @@
 import { Message, MessageBox } from 'element-ui';
 import util from '@/libs/util.js';
 import router from '@/router';
-import { login,getToken } from '@/api/login';
+import {login, getToken, codeAuth} from '@/api/login';
 
 export default {
   namespaced: true,
@@ -38,6 +38,31 @@ export default {
       await dispatch(
         'store/menu/getUserMenu',
         { userId: res.result.id },
+        {
+          root: true
+        }
+      );
+
+      // 用户登录后从持久化数据加载一系列的设置
+      await dispatch('load');
+    },
+    async codeAuth({ dispatch }, { code = '' } = {}) {
+      const data = await codeAuth(code);
+      if (data.error != "200") {
+        Message.warning({
+          message: '用户CODE错误，请重新跳转RAM系统登录'
+        });
+        return false;
+      }
+      util.cookies.set('token', data.result.token);
+      util.cookies.set('userId', data.result.id);
+      util.cookies.set('username', data.result.username);
+      util.cookies.set('name', data.result.name);
+      window.$count = 0;
+
+      await dispatch(
+        'store/menu/getUserMenu',
+        { userId: data.result.id },
         {
           root: true
         }
