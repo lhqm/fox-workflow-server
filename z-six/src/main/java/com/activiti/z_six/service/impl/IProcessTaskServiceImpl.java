@@ -28,6 +28,8 @@ import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.runtime.api.model.impl.APIProcessInstanceConverter;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +78,8 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
     private FindWork findWork;
     @Autowired
     private WorkFlowMessageContext workFlowMessageContext;
+    @Autowired
+    private APIProcessInstanceConverter processInstanceConverter;
 
     /**
      * 获取任务表单内容
@@ -136,7 +140,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
     public SendActionDto startProcess(ProcessTaskParams processTaskParams,String username){
         SendActionDto sendActionDto=new SendActionDto();
         //关联表单业务的主键，可通过参数传递过来，也可以自动生成
-        String BusinessKey=processTaskParams.getBusinessKey();
+        String businessKey=processTaskParams.getBusinessKey();
         //启动之前，进行判断
         OvProcessInstance ovProcessInstance=ovProcessInstanceMapper.getProcessInsLastVersion(processTaskParams.getProcessKey());
         BpmnModel bpmnModel = repositoryService.getBpmnModel(ovProcessInstance.getId_());
@@ -155,15 +159,23 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
         HashMap<String, Object> vars = new HashMap<>();
         vars.put(userTask.getId()+"_byStarter",username);
         //以多租户形式启动实例
-        org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.startProcessInstanceByKeyAndTenantId(processTaskParams.getProcessKey(),
-                processTaskParams.getProcessName(), vars,
-                processTaskParams.getTenantId() == null ? "main" : processTaskParams.getTenantId());
+        /**
+         * 这里的代码经过了修正，因为activiti的启动流程实例，没有提供租户的参数，所以这里通过activiti源码进行参照修改
+         * 下层接口中有租户相关实现和升级流程为可挂起的代码，直接借鉴过来使用就行了
+         */
+//        TODO:修改流程启动为多租户模式
+        ProcessInstance processInstance = processInstanceConverter.from(runtimeService.createProcessInstanceBuilder()
+                .tenantId(processTaskParams.getTenantId() == null ? "main" : processTaskParams.getTenantId())
+                .businessKey(businessKey)
+                .processDefinitionKey(processTaskParams.getProcessKey())
+                .variables(vars)
+                .name(processTaskParams.getProcessName()).start());
 //        ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
 //                .start()
 //                .withProcessDefinitionKey(processTaskParams.getProcessKey())
 //                .withName(processTaskParams.getProcessName())
 //                .withVariable(userTask.getId()+"_byStarter",username)
-//                .withBusinessKey(BusinessKey)
+//                .withBusinessKey(businessKey)
 //                .build());
 
 //        推送流程启动的消息
