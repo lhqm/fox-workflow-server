@@ -60,6 +60,6 @@ public class FlowProcessController {
     }
     @GetMapping("/processDefinition")
     public ResultRes processDefinition(String processKey){
-        return ResultRes.success(processService.getProcessDefinition(processKey));
+        return processService.getProcessDefinition(processKey);
     }
 }

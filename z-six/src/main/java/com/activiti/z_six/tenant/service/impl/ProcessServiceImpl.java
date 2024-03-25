@@ -92,10 +92,11 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public ResultRes getProcessDefinition(String processKey) {
 //        通过流程定义key拿到流程定义ID
-        ProcessDefinition definition = repositoryService
+        List<ProcessDefinition> list = repositoryService
                 .createProcessDefinitionQuery()
                 .processDefinitionKey(processKey)
-                .singleResult();
+                .latestVersion().list();
+        ProcessDefinition definition = list.get(0);
         String id = definition.getId();
         return ResultRes.success(getFlowElementsByProcessDefinition(id));
     }

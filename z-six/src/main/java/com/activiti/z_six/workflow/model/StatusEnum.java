@@ -1,4 +1,4 @@
-package com.activiti.z_six.tenant.statusTrans;
+package com.activiti.z_six.workflow.model;
 
 /**
  * 状态列举
@@ -17,7 +17,7 @@ public enum StatusEnum {
     private final String statusCode;
     private final String statusName;
 
-    StatusEnum(String statusCode,String statusName){
+    StatusEnum(String statusCode, String statusName){
         this.statusCode=statusCode;
         this.statusName=statusName;
     }

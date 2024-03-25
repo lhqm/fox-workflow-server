@@ -335,6 +335,17 @@ public class HttpsUtils {
 
     }
 
+    public static String paramsToPathVariables(Map<String,Object> params) {
+        StringBuilder result = new StringBuilder("?");
+        if(params!=null){
+            for(String key:params.keySet()){
+                result.append(key).append("=").append(params.get(key)).append("&");
+            }
+            result = new StringBuilder(result.substring(0, result.length() - 1));
+        }
+        return result.toString();
+    }
+
 
     /**
      * 设置 https 请求
