@@ -52,5 +52,5 @@ public class SendActionDto {
      * 扩展参数
      */
     private String params;
-
+    private String processInstanceId;
 }

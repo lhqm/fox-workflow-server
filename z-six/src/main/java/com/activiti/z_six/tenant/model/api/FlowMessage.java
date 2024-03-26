@@ -27,6 +27,7 @@ public class FlowMessage {
     private boolean isEnd;
 //    审批时间
     private long processTime;
+    private String businessKey;
 //    生成式随机确认码
     private String ackCode;
 }

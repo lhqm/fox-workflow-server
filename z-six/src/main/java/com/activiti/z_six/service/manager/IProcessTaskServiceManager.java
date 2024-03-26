@@ -3,7 +3,6 @@ package com.activiti.z_six.service.manager;
 import com.activiti.z_six.dto.SendActionDto;
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
 import com.activiti.z_six.entity.taskAssignee.*;
-import com.activiti.z_six.entity.tenant.FlowProcess;
 import com.activiti.z_six.mapper.taskAssigneeMapper.*;
 import com.activiti.z_six.security.RedisUtils;
 import com.activiti.z_six.service.ISmsEntityService;
@@ -15,8 +14,6 @@ import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.DateUtils;
 import com.activiti.z_six.util.SecurityUtils;
 import com.activiti.z_six.util.SystemConfig;
-import com.activiti.z_six.util.flow.FlowElementUtil;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -113,7 +110,7 @@ public class IProcessTaskServiceManager {
 //            发送消息给租户端
             sendMessageToTenant(processInstanceId,
                     new TransMsgExtension(SecurityUtils.getUsername(),toUser,Msg,ovTaskEntity.getName_()).getJsonString(),
-                    task,StatusEnum.TRANSFER,false);
+                    task,StatusEnum.TRANSFER,false,processTaskParams.getBusinessKey());
 
             return ovTaskEntity;
         }catch (Exception ex){
@@ -148,7 +145,7 @@ public class IProcessTaskServiceManager {
             this.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,6,"手动结束");
 
             //            发送消息给租户端
-            sendMessageToTenant(processInstanceId,Msg,ovTaskEntity,StatusEnum.INTERRUPT,true);
+            sendMessageToTenant(processInstanceId,Msg,ovTaskEntity,StatusEnum.INTERRUPT,true, processTaskParams.getBusinessKey());
         }
         catch (Exception ex){
             ovTaskEntityMapper.setTaskStatus(ovTaskEntity);
@@ -212,6 +209,7 @@ public class IProcessTaskServiceManager {
         //获取任务信息
         OvTaskEntity task = ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId());
         ProcessInstance processInstance = processRuntime.processInstance(task.getProc_inst_id_());
+        sendActionDto.setProcessInstanceId(task.getProc_inst_id_());
 
 //        这行代码可以用来调试流程元素获取方法是否有问题。只需要在调试模式下发起对应流程的申请就行了
 //        List<FlowProcess> definition = getFlowElementsByProcessDefinition(processInstance.getProcessDefinitionId());
@@ -321,7 +319,7 @@ public class IProcessTaskServiceManager {
                         .processInstanceId(taskObj.getProcessInstanceId())
                         .isEnd(false)
                         .build();
-                smsEntityService.storeTenantStatusMessage(StatusEnum.HUMAN_MODEL_SELECTION,flowMessage,task.getTenant_id_());
+                smsEntityService.storeTenantStatusMessage(StatusEnum.HUMAN_MODEL_SELECTION,flowMessage,task.getTenant_id_(),processInstance.getBusinessKey());
             }
 //            其他情况下的数据
 //            如果是用户手动发送，那么送达时序应该是：
@@ -518,13 +516,15 @@ public class IProcessTaskServiceManager {
 
     /**
      * 为其他状态转移特意封装的通知消息类型。该方法用于快速从只具有参数列表内条件的状态迁移方法，固定迁移到指定的节点。
+     *
      * @param processInstanceId 流程实例ID
-     * @param Msg 审批消息
-     * @param task 任务节点ID
-     * @param statusEnum 状态列举类型
-     * @param endTask 是否结束
+     * @param Msg               审批消息
+     * @param task              任务节点ID
+     * @param statusEnum        状态列举类型
+     * @param endTask           是否结束
+     * @param businessKey
      */
-    public void sendMessageToTenant(String processInstanceId,String Msg,OvTaskEntity task,StatusEnum statusEnum,boolean endTask){
+    public void sendMessageToTenant(String processInstanceId, String Msg, OvTaskEntity task, StatusEnum statusEnum, boolean endTask, String businessKey){
         //            构造租户端移交消息
         FlowMessage flowMessage = FlowMessage.builder()
                 .processInstanceId(processInstanceId)
@@ -536,6 +536,6 @@ public class IProcessTaskServiceManager {
                 .isEnd(endTask)
                 .build();
 //            移交到租户端
-        smsEntityService.storeTenantStatusMessage(statusEnum,flowMessage,task.getTenant_id_());
+        smsEntityService.storeTenantStatusMessage(statusEnum,flowMessage,task.getTenant_id_(), businessKey);
     }
 }

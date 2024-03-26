@@ -53,7 +53,7 @@ public interface ISmsEntityService {
     String sendFlowMsg(String toUsers, String sender, ProcessInstance processInstance,
                        ProcessTaskParams processTaskParams, OvTaskEntity ovTaskEntity, Task task, HistoricProcessInstance historicProcessInstance, Boolean endTask);
 
-    void storeTenantStatusMessage(StatusEnum statusEnum, FlowMessage flowMessage, String tenant);
+    void storeTenantStatusMessage(StatusEnum statusEnum, FlowMessage flowMessage, String tenant, String businessKey);
 
     /**
      * 发送抄送消息

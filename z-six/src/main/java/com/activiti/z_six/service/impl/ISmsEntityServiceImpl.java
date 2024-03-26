@@ -106,6 +106,7 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
                 .builder()
 //                设置实例ID
                 .processInstanceId(processInstance.getId())
+                .businessKey(processInstance.getBusinessKey())
 //                设置签发时间
                 .processTime(
                         task.getCompletedDate()==null?
@@ -163,7 +164,7 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
     }
 
     @Override
-    public void storeTenantStatusMessage(StatusEnum statusEnum, FlowMessage flowMessage, String tenant) {
+    public void storeTenantStatusMessage(StatusEnum statusEnum, FlowMessage flowMessage, String tenant, String businessKey) {
         //                向租户端发送结转消息
         flowMessage.setStatusChangeId(statusEnum.getStatusCode());
         flowMessage.setStatusChangeText(statusEnum.getStatusName());

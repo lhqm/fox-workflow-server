@@ -27,6 +27,7 @@ import org.activiti.api.task.runtime.TaskRuntime;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.*;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.runtime.api.model.impl.APIProcessInstanceConverter;
@@ -196,6 +197,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
 //                设置启动状态
                 .statusChangeId(StatusEnum.STARTING.getStatusCode())
                 .statusChangeText(StatusEnum.STARTING.getStatusName())
+                .businessKey(businessKey)
                 .build();
 //        发送到Redis的消息队列
         workFlowMessageContext.StorageMessageByTenant(flowMessage, processTaskParams.getTenantId());
@@ -306,7 +308,8 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             processTaskParams.setProcessInstanceId(returnWork.getProc_inst_id());
             processTaskParams.setMsg(returnWork.getReturn_msg());
             processTaskServiceManager.setApprovalTrack(task_def_key,task_def_name,processTaskParams,2,"驳回");
-
+//            获取到这条流程实例
+            HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(returnWork.getProc_inst_id()).singleResult();
             //记录日志
             //        推送流程被拒绝的消息
             FlowMessage flowMessage = FlowMessage.builder()
@@ -324,6 +327,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
 //                设置拒绝的状态
                     .statusChangeId(StatusEnum.REFUSE.getStatusCode())
                     .statusChangeText(StatusEnum.REFUSE.getStatusName())
+                    .businessKey(processInstance.getBusinessKey())
                     .build();
 //        发送到Redis的消息队列
             workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId()).getTenant_id_());
@@ -395,6 +399,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             processTaskParams.setProcessInstanceId(params.getProc_inst_id());
             processTaskParams.setMsg(params.getMsg());
             processTaskServiceManager.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,4,"加签");
+            HistoricProcessInstance instance = historyService.createHistoricProcessInstanceQuery().processInstanceId(params.getProc_inst_id()).singleResult();
 
             //记录日志
             //        推送流程加签的消息
@@ -409,10 +414,11 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                     .targetTaskId(ovTaskEntity.getTask_def_key_())
 //                源ID设为流程的当前节点ID，加签后，流程依旧卡在这个节点上
                     .sourceTaskId(ovTaskEntity.getTask_def_key_())
-                    .processKey(ovTaskEntity.getProc_def_id_().split(":")[1])
+                    .processKey(ovTaskEntity.getProc_def_id_().split(":")[0])
 //                设置加签的状态
                     .statusChangeId(StatusEnum.COUNTERSIGN.getStatusCode())
                     .statusChangeText(StatusEnum.COUNTERSIGN.getStatusName())
+                    .businessKey(instance.getBusinessKey())
                     .build();
 //        发送到Redis的消息队列
             workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntityMapper.ovTaskEntity(processTaskParams.getTaskId()).getTenant_id_());
@@ -447,7 +453,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             processTaskParams.setProcessInstanceId(params.getProc_inst_id());
             processTaskParams.setMsg(params.getMsg());
             processTaskServiceManager.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,5,"不同意");
-
+            HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(params.getProc_inst_id()).singleResult();
             //        推送流程驳回的消息
             FlowMessage flowMessage = FlowMessage.builder()
                     .processInstanceId(params.getProc_inst_id())
@@ -464,6 +470,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
 //                设置启动状态
                     .statusChangeId(StatusEnum.REFUSE.getStatusCode())
                     .statusChangeText(StatusEnum.REFUSE.getStatusCode())
+                    .businessKey(processInstance.getBusinessKey())
                     .build();
 //        发送到Redis的消息队列
             workFlowMessageContext.StorageMessageByTenant(flowMessage,ovTaskEntity.getTenant_id_());
