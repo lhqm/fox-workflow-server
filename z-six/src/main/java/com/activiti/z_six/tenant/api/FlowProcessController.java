@@ -5,6 +5,7 @@ import com.activiti.z_six.tenant.model.api.FormCommit;
 import com.activiti.z_six.tenant.model.api.ProcessStart;
 import com.activiti.z_six.tenant.service.ProcessService;
 import com.activiti.z_six.util.ResultRes;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,5 +62,10 @@ public class FlowProcessController {
     @GetMapping("/processDefinition")
     public ResultRes processDefinition(String processKey){
         return processService.getProcessDefinition(processKey);
+    }
+
+    @PostMapping("/getProcessFormData")
+    public ResultRes getProcessFormData(@RequestBody JSONObject jsonObject){
+        return processService.getProcessFormData(jsonObject);
     }
 }

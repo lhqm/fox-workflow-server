@@ -6,6 +6,7 @@ import com.activiti.z_six.dto.controllerParams.FormDataValue;
 import com.activiti.z_six.dto.controllerParams.ProcessTaskParams;
 import com.activiti.z_six.entity.tenant.FlowProcess;
 import com.activiti.z_six.service.IFormValueService;
+import com.activiti.z_six.service.IProcessManageService;
 import com.activiti.z_six.service.IProcessTaskService;
 import com.activiti.z_six.tenant.service.ProcessService;
 import com.activiti.z_six.util.ResultRes;
@@ -41,19 +42,23 @@ public class ProcessServiceImpl implements ProcessService {
     private RepositoryService repositoryService;
     @Autowired
     private ProcessRuntime processRuntime;
+    @Autowired
+    private IProcessManageService processManageService;
+
     @Override
     public Map<String, Object> getFormJson(String processKey, String taskId) {
         String userName = RequestUtils.getUserName();
-        return processTaskService.getHisFormJson(processKey, taskId,userName);
+        return processTaskService.getHisFormJson(processKey, taskId, userName);
     }
+
     @Override
-    public String submitForm(String processKey, String dataJson,String taskId) throws Exception {
+    public String submitForm(String processKey, String dataJson, String taskId) throws Exception {
         /*进行自动填充
-        * dataJson的数据结构大致如下：<表单字段名称,表单字段对应值>
-        * 而表单数据可以归结为两个描述字段：
-        * config:表单主体定义，包括存储的物理表、对应的版本、是否开启动态表映射等
-        * list:表单内各个字段的定义
-        */
+         * dataJson的数据结构大致如下：<表单字段名称,表单字段对应值>
+         * 而表单数据可以归结为两个描述字段：
+         * config:表单主体定义，包括存储的物理表、对应的版本、是否开启动态表映射等
+         * list:表单内各个字段的定义
+         */
 //        先获取到传过来的数据对应的表单定义这些
         Map<String, Object> formJson = getFormJson(processKey, taskId);
 //        再拿到表单相关定义数据
@@ -65,28 +70,28 @@ public class ProcessServiceImpl implements ProcessService {
         for (int i = 0; i < fields.size(); i++) {
 //            取到其字段进行填充
             JSONObject data = JSONObject.parseObject(fields.get(i).toString());
-            if (dataMap.containsKey(data.getString("id"))){
+            if (dataMap.containsKey(data.getString("id"))) {
 //                向其中填充数据
-                data.put("value",dataMap.get(data.getString("id")));
+                data.put("value", dataMap.get(data.getString("id")));
 //                替换数据
-                fields.set(i,data);
+                fields.set(i, data);
             }
         }
 //        最后去加载数据
-            return formValueService.saveFormValueByJson(new FormDataValue(
-                    taskId,processKey,
-                    formJson.containsKey("form_type")?formJson.get("form_type").toString():"0",
-                    formJson.containsKey("form_url")?formJson.get("form_type").toString():"",
-                    JSON.toJSONString(mapJson),
-                    dataJson
-                    ));
+        return formValueService.saveFormValueByJson(new FormDataValue(
+                taskId, processKey,
+                formJson.containsKey("form_type") ? formJson.get("form_type").toString() : "0",
+                formJson.containsKey("form_url") ? formJson.get("form_type").toString() : "",
+                JSON.toJSONString(mapJson),
+                dataJson
+        ));
     }
 
     @Override
     public SendActionDto startProcess(ProcessTaskParams processTaskParams) {
         String starter = RequestUtils.getUserName();
         securityUtil.loginSafely(starter);
-        return processTaskService.startProcess(processTaskParams,starter);
+        return processTaskService.startProcess(processTaskParams, starter);
     }
 
     @Override
@@ -101,14 +106,25 @@ public class ProcessServiceImpl implements ProcessService {
         return ResultRes.success(getFlowElementsByProcessDefinition(id));
     }
 
+    @Override
+    public ResultRes getProcessFormData(JSONObject jsonObject) {
+        securityUtil.loginSafely("admin");
+        return ResultRes.success(
+                processManageService.
+                        getManageParams(jsonObject.getString("proce_inst_id")
+                                , jsonObject.getString("business_key")
+                        ));
+    }
+
 
     /**
      * 获取到对应流程定义ID的整体流程信息
+     *
      * @param definitionId 流程定义信息ID
      * @return 流程定义信息
      */
 
-    public List<FlowProcess> getFlowElementsByProcessDefinition(String definitionId){
+    public List<FlowProcess> getFlowElementsByProcessDefinition(String definitionId) {
 //        获取到流程的模型实例
         BpmnModel bpmnModel = repositoryService.getBpmnModel(definitionId);
 //        在模型的流程表里选择第一个流程作为流程对象定义（一般也只有一个）
@@ -125,11 +141,12 @@ public class ProcessServiceImpl implements ProcessService {
 
     /**
      * 通过流程实例ID去获取流程定义
+     *
      * @param instanceId 流程实例ID
      * @return 流程定义信息
      */
 
-    public List<FlowProcess> getFlowElementsByProcessInstance(String instanceId){
+    public List<FlowProcess> getFlowElementsByProcessInstance(String instanceId) {
         ProcessInstance processInstance = processRuntime.processInstance(instanceId);
         return getFlowElementsByProcessDefinition(processInstance.getProcessDefinitionId());
     }
