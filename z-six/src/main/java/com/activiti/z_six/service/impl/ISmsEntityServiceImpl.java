@@ -14,6 +14,7 @@ import com.activiti.z_six.tenant.statusTrans.StatusEnum;
 import com.activiti.z_six.util.SecurityUtils;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.task.model.Task;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
     private WorkFlowMessageContext workFlowMessageContext;
     @Autowired
     private OvTaskEntityMapper ovTaskEntityMapper;
+    @Autowired
+    private HistoryService historyService;
 
     /**
      * 获取流程通知列表

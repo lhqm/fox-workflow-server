@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FlowAsk {
-    private String askCode;
+    private String ackCode;
     private String tenant;
 }

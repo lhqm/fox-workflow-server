@@ -59,8 +59,8 @@ public class WorkFlowMessageRuntimeContext implements WorkFlowMessageContext {
     @Override
     public Long receiveFlowMessage(String askCode, String tenant) {
         if (askCode==null || askCode.equals("")) return -1L;
-        System.out.println(tenant);
-        System.out.println(askCode);
+//        System.out.println(tenant);
+//        System.out.println(askCode);
         return receiveFlowMessageList(Arrays.asList(askCode.split(",")),tenant);
     }
 }

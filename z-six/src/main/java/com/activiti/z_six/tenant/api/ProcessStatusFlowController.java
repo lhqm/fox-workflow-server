@@ -30,6 +30,6 @@ public class ProcessStatusFlowController {
     @PostMapping("/ackByCode")
     public ResultRes contextLoad(@RequestBody FlowAsk flowAsk){
         System.out.println(flowAsk.toString());
-        return ResultRes.success(workFlowMessageContext.receiveFlowMessage(flowAsk.getAskCode(), flowAsk.getTenant()));
+        return ResultRes.success(workFlowMessageContext.receiveFlowMessage(flowAsk.getAckCode(), flowAsk.getTenant()));
     }
 }
