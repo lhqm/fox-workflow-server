@@ -318,7 +318,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                     .processMessage(returnWork.getReturn_msg())
 //                截取当前时间作为启动标注
                     .processTime(System.currentTimeMillis())
-                    .isEnd(false)
+                    .isEnd(true)
 //                下一个节点的ID
                     .targetTaskId(returnWayEntity.getTask_def_id())
 //                源ID设为流程的启动节点ID
@@ -461,7 +461,7 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
                     .processMessage(params.getMsg())
 //                截取当前时间作为启动标注
                     .processTime(System.currentTimeMillis())
-//                    .isEnd(false)
+                    .isEnd(true)
 //                下一个节点的ID
                     .targetTaskId(null)
 //                源ID设为流程的启动节点ID

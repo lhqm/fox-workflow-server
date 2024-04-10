@@ -15,6 +15,7 @@ import com.activiti.z_six.util.SecurityUtils;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.task.model.Task;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,8 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
          *
          * @release: 新增租户端推送支持。
          */
+//        修复可能存在没有流程key的问题
+        HistoricProcessInstance historicProcessInstanceData = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).singleResult();
         FlowMessage flowMessage = FlowMessage
                 .builder()
 //                设置实例ID
@@ -117,7 +120,7 @@ public class ISmsEntityServiceImpl implements ISmsEntityService {
                                 : task.getCompletedDate().getTime())
 //                设置任务ID，表明进行到哪一步了
                 .sourceTaskId(ovTaskEntity.getTask_def_key_())
-                .processKey(processTaskParams.getProcessKey())
+                .processKey(historicProcessInstanceData.getProcessDefinitionKey())
 //                设置处理信息
                 .processMessage(processTaskParams.getMsg())
                 .build();

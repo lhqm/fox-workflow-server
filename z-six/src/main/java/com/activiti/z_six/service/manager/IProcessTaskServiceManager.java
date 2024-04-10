@@ -106,11 +106,11 @@ public class IProcessTaskServiceManager {
             processTaskParams.setProcessInstanceId(processInstanceId);
             processTaskParams.setMsg(Msg);
             this.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,3,"移交");
-
+            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
 //            发送消息给租户端
             sendMessageToTenant(processInstanceId,
                     new TransMsgExtension(SecurityUtils.getUsername(),toUser,Msg,ovTaskEntity.getName_()).getJsonString(),
-                    task,StatusEnum.TRANSFER,false,processTaskParams.getBusinessKey());
+                    task,StatusEnum.TRANSFER,false,historicProcessInstance.getProcessDefinitionKey().split(":")[0]);
 
             return ovTaskEntity;
         }catch (Exception ex){
@@ -315,7 +315,13 @@ public class IProcessTaskServiceManager {
                         .sourceTaskId(sendActionDto.getCurTask_key())
                         .processTime(System.currentTimeMillis())
                         .targetTaskId(userTask.getId())
-                        .processKey(processTaskParams.getProcessKey())
+                        .processKey(historyService
+                                .createHistoricProcessInstanceQuery()
+                                .processInstanceId(taskObj
+                                        .getProcessInstanceId())
+                                .singleResult()
+                                .getProcessDefinitionKey()
+                                .split(":")[0])
                         .processInstanceId(taskObj.getProcessInstanceId())
                         .isEnd(false)
                         .build();
