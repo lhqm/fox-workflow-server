@@ -21,7 +21,18 @@ export default {
           taskRuleId: 5,
           ruleKey:'byGroup',
           taskRuleName: "按照指定的分组"
-        }],
+        }
+        ,{
+          taskRuleId: 6,
+          ruleKey:'byDeptMaster',
+          taskRuleName: "按申请人的部门领导"
+          }
+          ,{
+            taskRuleId: 7,
+            ruleKey:'byDeptLeader',
+            taskRuleName: "按申请人的分管领导"
+          }
+        ],
         returnWay: [{
           returnWayKey: 'none',
           returnWayName: "禁用"

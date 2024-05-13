@@ -54,6 +54,7 @@ public class SequenceFlowManager {
 
     /**
      * 根据处理人规则获取参数
+     * todo:在这里去执行多重事件。每次多重事件读取后都需要执行找人逻辑。会签节点的数量限制和动态加人就可以在这里实现
      * @param userTask
      * @param variables
      * @param procInstId

@@ -89,7 +89,7 @@
         destroy-on-close
       >
         <el-form :model="byDeptForm" label-width="80px" style="width: 99%" size="mini">
-          <rule-to-dept ref="assigneeByDeptRef"></rule-to-dept>
+          <rule-to-dept :treedata="deptList" ref="assigneeByDeptRef"></rule-to-dept>
         </el-form>
         <template slot="footer">
           <el-button size="mini" @click="byDeptFormModelVisible = false">取 消</el-button>
@@ -161,6 +161,30 @@
               @click="saveAssigneeByUser('byGroup')"
             >确认</el-button
             >
+          </div>
+        </template>
+      </div>
+      <div v-if="processTaskRule == 'byDeptLeader'">
+        <template>
+          <div class="element-drawer__button">
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="saveAssigneeByUser('byDeptLeader')"
+            >确认</el-button>
+          </div>
+        </template>
+      </div>
+      <div v-if="processTaskRule == 'byDeptMaster'">
+        <template>
+          <div class="element-drawer__button">
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="saveAssigneeByUser('byDeptMaster')"
+            >确认</el-button>
           </div>
         </template>
       </div>
@@ -398,6 +422,7 @@
             selectData.push(byGroupObj);
           });
         }
+        // TODO:这里实现了在前端传入设置用户选择的实例类型
         setAssigneeUserWithTaskId({
           userlist: selectData,
           usertaskid: task_def_key,

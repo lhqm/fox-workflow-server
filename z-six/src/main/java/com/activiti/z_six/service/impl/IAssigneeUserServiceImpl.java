@@ -39,6 +39,7 @@ public class IAssigneeUserServiceImpl implements IAssigneeUserService {
         }
         else {
             assigneeUserEntityList=JSONObject.parseArray(assigneeString, AssigneeUserEntity.class);
+//            TODO：在这里实现找人逻辑
             if(ruleName.equals("byUser")||ruleName.equals("byDept")) {
                 if (SystemConfig.IsNullOrEmpty(assigneeUserEntityList.get(0).getUsername())
                         && SystemConfig.IsNullOrEmpty(assigneeUserEntityList.get(0).getName())) {
@@ -68,7 +69,7 @@ public class IAssigneeUserServiceImpl implements IAssigneeUserService {
     @Override
     public String setAssigneeUser(JSONObject param){
         //人员数据
-        JSONArray userlist = param.getJSONArray("userlist");
+        JSONArray userlist = param.getJSONArray("userlist")==null?new JSONArray():param.getJSONArray("userlist");
         //规则节点id标识
         String usertaskid=param.getString("usertaskid");
         //节点id
@@ -81,7 +82,7 @@ public class IAssigneeUserServiceImpl implements IAssigneeUserService {
         }
         //写入redis
         redisUtils.set(usertaskid,userlist.toString(),expireTime);
-
+//TODO:在这里扩展签入用户
         List<AssigneeUserEntity> assigneeUserEntityList=assigneeUserMapper.getAssigneeUserWithTaskKey(id,ruleName);
         if(assigneeUserEntityList.size()>0){
             processDefManager.deleteAssigneeUserByTaskid(id);

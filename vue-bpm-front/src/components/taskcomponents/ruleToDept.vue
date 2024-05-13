@@ -30,7 +30,10 @@
             <el-table-column type="index" width="50" label="序号"></el-table-column>
             <el-table-column prop="id" label="部门ID" ></el-table-column>
             <el-table-column prop="name" label="部门名称"></el-table-column>
-            <el-table-column label="所属公司" align="center">
+            <el-table-column prop="companyname" label="所属公司"></el-table-column>
+            <el-table-column prop="leadername" label="部门领导"></el-table-column>
+
+            <el-table-column label="操作" align="center">
               <template slot-scope="scope">
                 <div class="operation-btn">
                   <el-button icon="el-icon-delete" slot="reference"
@@ -51,9 +54,15 @@
 import { getOrgData } from '@/api/orgm/orgm'
 export default {
   name: "ruleToDept",
+  props: {
+    treedata: {
+      type: Array,
+      default: ''
+    }
+  },
   data() {
     return {
-      treedata:[],
+      // treedata:[],
       selectData:[],
       filterText: '',
       defaultProps: {

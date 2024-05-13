@@ -128,6 +128,25 @@
     <select id="getUserByUserId" resultType="com.activiti.z_six.entity.orgmanagement.UserEntity">
         select * from sys_user where id=#{userId}
     </select>
+    <select id="getDepartmentByUserId" resultType="com.activiti.z_six.entity.orgmanagement.DepartmentEntity">
+        SELECT
+            a.id uid,
+            a.NAME uname,
+            a.username,
+            b.departid,
+            b.id AS guuid,
+            c.*,
+            a.tel,
+            a.email,
+            a.sex,
+            a.state
+        FROM
+            sys_user a
+                LEFT JOIN sys_deptuser b ON a.username = b.username
+                LEFT JOIN sys_department c ON b.departid = c.id
+        WHERE
+            a.username=#{uid}
+    </select>
 
     <insert id="addUser" keyProperty="id"
             parameterType="com.activiti.z_six.entity.orgmanagement.UserEntity">

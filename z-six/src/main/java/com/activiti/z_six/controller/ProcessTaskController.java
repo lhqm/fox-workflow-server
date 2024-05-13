@@ -63,6 +63,7 @@ public class ProcessTaskController {
             return ResultRes.success(processTaskService.sendWork(processTaskParams));
         }
         catch (Exception ex){
+            ex.printStackTrace();
             return ResultRes.error(ex.toString());
         }
     }

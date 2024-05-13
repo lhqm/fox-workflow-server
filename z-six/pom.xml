@@ -197,7 +197,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.3.7.RELEASE</version>
                 <configuration>
-                    <mainClass>com.activiti.z_six.ZSixApplication</mainClass>
+                    <mainClass>com.activiti.z_six.FlowApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

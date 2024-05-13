@@ -227,6 +227,7 @@ public class IFormManager {
                             childrenCol = new CustomTable();
                             JSONObject children = childrens.getJSONObject(k);
                             //如果类型是文本、二维码、alert、超链接、按钮、颜色选择器、分割线、附件
+                            //这些需要忽略掉。属于提示性组件或者固定组件
                             if (children.getString("compType").equals("text")
                                     || children.getString("compType").equals("barCode")
                                     || children.getString("compType").equals("alert")
@@ -237,11 +238,13 @@ public class IFormManager {
                                     || children.getString("compType").equals("upload"))
                                 continue;
                             //类型如果是 input\select\checkbox、弹窗、联级选择
+                            //这些类型需要创建表字段类型varchar(255)
                             if (children.getString("compType").equals("input") ||
                                     children.getString("compType").equals("select") ||
                                     children.getString("compType").equals("checkbox")
                                     || children.getString("compType").equals("dialogList")
-                                    || children.getString("compType").equals("cascader")
+                                    || children.getString("compType").equals("ca" +
+                                    "scader")
                             ) {
                                 childrenCol.setChoose(true);
                                 childrenCol.setCreateTableFiledName(children.getString("id"));
@@ -559,6 +562,7 @@ public class IFormManager {
                         || list.getString("compType").equals("divider")
                         || list.getString("compType").equals("upload"))
                     continue;
+//                如果是
                 if (list.getString("compType").equals("dynamicTable")) {
                     if (!SystemConfig.IsNullOrEmpty(list.getString("columns"))) {
                         JSONArray childrens = JSONArray.parseArray(list.getString("columns"));

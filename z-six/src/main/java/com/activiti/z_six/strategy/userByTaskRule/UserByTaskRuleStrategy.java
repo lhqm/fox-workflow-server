@@ -4,6 +4,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
+/**
+ * 查找关联人的策略
+ */
+//TODO：用这个接口实现找人逻辑
 @Component
 public interface UserByTaskRuleStrategy {
     /**

@@ -50,6 +50,7 @@ public class TaskAssigneeController {
             redisUtils.remove(redisKey);
         }
         redisUtils.set(redisKey,attrValue);
+        System.out.println("设置用户参数："+redisKey+"\n\n"+attrValue);
         return ResultRes.success("设置成功");
     }
 

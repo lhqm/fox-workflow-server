@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @MapperScan("com.activiti.z_six.excLog.dao")
 @MapperScan("com.activiti.z_six.operLog.dao")
 @SpringBootApplication
-public class ZSixApplication {
+public class FlowApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ZSixApplication.class, args);
+        SpringApplication.run(FlowApplication.class, args);
     }
 }

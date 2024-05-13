@@ -168,6 +168,7 @@ public class IProcessDefinitionManager {
                     if (redisUtils.exists(usertaskId + "_" + ruleName)) {
                         assigneeString = redisUtils.get(usertaskId + "_" + ruleName).toString();
                         deleteAssigneeUserByTaskid(usertaskId);
+//                        TODO:设置签入人
                         setAssigneeUser(assigneeString, usertaskId, ruleName);
                     }
                 }
@@ -285,6 +286,14 @@ public class IProcessDefinitionManager {
                     assigneeUserEntity.setId(UUID.randomUUID().toString());
                     return assigneeUserEntity;
                 }).collect(Collectors.toList())).orElse(new ArrayList<>());
+//        TODO:扩展无具体指代人的找人方式挂载
+        /*这里扩展找人方式，目前有按部门主管和部门直属领导的方式，在本节进行扩展。由于没有具体的指代人或者机构，上述循环代码不会执行*/
+        List<String> extensionRule = Arrays.asList("byDeptMaster", "byDeptLeader");
+        if (extensionRule.contains(ruleName)){
+            assigneeUserEntityList.add(
+                    new AssigneeUserEntity(UUID.randomUUID().toString(), usertaskid, "", "", ruleName, null)
+            );
+        }
         assigneeUserMapper.setAssigneeUser(assigneeUserEntityList);
 
         return "执行成功";

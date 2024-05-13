@@ -449,9 +449,11 @@ public class IProcessTaskServiceImpl implements IProcessTaskService {
             //设置结束时间
             ovTaskEntityMapper.setPrcoInstStatus(DateTime.now().toString("YYYY-MM-dd HH:mm:ss"),params.getProc_inst_id());
             ProcessTaskParams processTaskParams=new ProcessTaskParams();
+//            设置结束的userTask节点
             processTaskParams.setTaskId(params.getTaskid());
             processTaskParams.setProcessInstanceId(params.getProc_inst_id());
             processTaskParams.setMsg(params.getMsg());
+//            设置审批驳回
             processTaskServiceManager.setApprovalTrack(ovTaskEntity.getTask_def_key_(),ovTaskEntity.getName_(),processTaskParams,5,"不同意");
             HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(params.getProc_inst_id()).singleResult();
             //        推送流程驳回的消息

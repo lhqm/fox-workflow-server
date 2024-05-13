@@ -31,8 +31,9 @@ public class ByDept implements UserByTaskRuleStrategy{
                 .getAssigneeUserWithTaskKey(taskid,ruleName);
         List<AssigneeUserEntity> assigneeUserEntityList = (List<AssigneeUserEntity>)hashMap.get("assigneeUserEntityList");
         String nextWorkEmp="";
+//        循环查用户
         for (AssigneeUserEntity ae : assigneeUserEntityList) {
-            List<UserEntity> userEntityList=userEntityMapper.getUserByDepartId(Integer.parseInt(ae.getUsername()));
+            List<UserEntity> userEntityList=userEntityMapper.getUserByDepartId(Integer.parseInt(ae.getId()));
             for(UserEntity userEntity:userEntityList){
                 nextWorkEmp = nextWorkEmp + userEntity.getUsername() + ",";
             }

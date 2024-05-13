@@ -145,4 +145,11 @@ public interface UserEntityMapper {
     int deleteUser(UserEntity userEntity);
 
     UserEntity getUserByUserId(String userId);
+
+    /**
+     * 获取用户对应的部门
+     * @param userId
+     * @return
+     */
+    DepartmentEntity getDepartmentByUserId(@Param("uid") String userId);
 }
